@@ -733,7 +733,8 @@ GeometryGenerator::MeshData GeometryGenerator::CreateDiamondOfDeath(float height
 	return meshData;
 }
 
-GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height)
+// Shape #1 - Cone
+GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add number of steps for circular top
 {
 	MeshData meshData;
 
@@ -742,13 +743,12 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height)
 	//
 
 	Vertex v[10];
-
-
 	float verts = 10.f;
 	
 
 	//Bottom point vert
 	v[0] = Vertex(0.0f, 2.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+
 	// bottom center point
 	// Used polygon formula to create the large and small octagons
 	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*0.75f, height, sin((1 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -767,6 +767,25 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height)
 
 	uint32 i[48];
 
+	i[0] = 0;	i[1] = 2;	i[2] = 1;
+	i[3] = 0;	i[4] = 1;	i[5] = 8;
+	i[6] = 0;	i[7] = 8;	i[8] = 7;
+	i[9] = 0;	i[10] = 7;	i[11] = 6;
+	i[12] = 0;	i[13] = 6;	i[14] = 5;
+	i[15] = 0;	i[16] = 5;	i[17] = 4;
+	i[18] = 0;	i[19] = 4;	i[20] = 3;
+	i[21] = 0;	i[22] = 3;	i[23] = 2;
+
+	i[24] = 1;  i[25] = 2;  i[26] = 9;
+	i[27] = 2;  i[28] = 3;  i[29] = 9;
+	i[30] = 3;  i[31] = 4;  i[32] = 9;
+	i[33] = 4;  i[34] = 5;  i[35] = 9;
+	i[36] = 5;  i[37] = 6;  i[38] = 9;
+	i[39] = 6;  i[40] = 7;  i[41] = 9;
+	i[42] = 7;  i[43] = 8;  i[44] = 9;
+	i[45] = 8;  i[46] = 1;  i[47] = 9;
+
+	/*
 	i[0] = 0;	i[1] = 1;	i[2] = 2;
 	i[3] = 0;	i[4] = 2;	i[5] = 3;
 	i[6] = 0;	i[7] = 3;	i[8] = 4;
@@ -784,7 +803,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height)
 	i[39] = 6;  i[40] = 7;  i[41] = 9;
 	i[42] = 7;  i[43] = 8;  i[44] = 9;
 	i[45] = 8;  i[46] = 1;  i[47] = 9;
-
+	*/
 	
 	meshData.Indices32.assign(&i[0], &i[48]);
 
@@ -795,3 +814,5 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height)
 
 	return meshData;
 }
+
+// Shape #2 - 

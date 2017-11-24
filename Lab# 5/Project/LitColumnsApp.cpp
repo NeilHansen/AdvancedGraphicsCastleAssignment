@@ -855,7 +855,6 @@ void LitColumnsApp::BuildRenderItems()
 
 	
 
-
 	XMMATRIX brickTexTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	UINT objCBIndex = 3;
 	for(int i = 0; i < 5; ++i)
@@ -947,19 +946,19 @@ void LitColumnsApp::BuildRenderItems()
 	diamondLitem->BaseVertexLocation = diamondLitem->Geo->DrawArgs["diamond"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(diamondLitem));
 
-	auto coneitem = std::make_unique<RenderItem>();
+	auto coneItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneWorld = XMMatrixTranslation(-0.75f, 2.25f, -0.5f);
-	XMStoreFloat4x4(&coneitem->World, coneWorld);
-	coneitem->TexTransform = MathHelper::Identity4x4();
-	coneitem->ObjCBIndex = objCBIndex++;
-	coneitem->Mat = mMaterials["coneMat"].get();
-	coneitem->Geo = mGeometries["shapeGeo"].get();
-	coneitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	coneitem->IndexCount = coneitem->Geo->DrawArgs["cone"].IndexCount;
-	coneitem->StartIndexLocation = coneitem->Geo->DrawArgs["cone"].StartIndexLocation;
-	coneitem->BaseVertexLocation = coneitem->Geo->DrawArgs["cone"].BaseVertexLocation;
-	mAllRitems.push_back(std::move(coneitem));
+	XMMATRIX coneWorld = XMMatrixTranslation(-1.0f, 0.0f, -5.0f);
+	XMStoreFloat4x4(&coneItem->World, coneWorld);
+	coneItem->TexTransform = MathHelper::Identity4x4();
+	coneItem->ObjCBIndex = objCBIndex++;
+	coneItem->Mat = mMaterials["coneMat"].get();
+	coneItem->Geo = mGeometries["shapeGeo"].get();
+	coneItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	coneItem->IndexCount = coneItem->Geo->DrawArgs["cone"].IndexCount;
+	coneItem->StartIndexLocation = coneItem->Geo->DrawArgs["cone"].StartIndexLocation;
+	coneItem->BaseVertexLocation = coneItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(coneItem));
 
 
 	// All the render items are opaque.
