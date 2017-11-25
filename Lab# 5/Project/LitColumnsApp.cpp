@@ -502,6 +502,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.5f, 1.5f, 2.0f);
 	GeometryGenerator::MeshData pyramid = geoGen.CreatePyramid(1.5f, 1.5f, 2.0f);
 	GeometryGenerator::MeshData truncPyramid = geoGen.CreateTruncatedPyramid(1.5f, 1.5f, 0.75f, 0.75f, 2.0f);
+	GeometryGenerator::MeshData triangularPrism = geoGen.CreateTriangularPrism(1.5f, 1.5f, 1.5f, 1.5f, 2.0f);
+	GeometryGenerator::MeshData tetrahedron = geoGen.CreateTetrahedron(1.5f, 1.5f, 2.0f);
 
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
@@ -518,6 +520,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	UINT wedgeVertexOffset = coneVertexOffset + (UINT)cone.Vertices.size();
 	UINT pyramidVertexOffset = wedgeVertexOffset + (UINT)wedge.Vertices.size();
 	UINT truncPyramidVertexOffset = pyramidVertexOffset + (UINT)pyramid.Vertices.size();
+	UINT triangularPrismVertexOffset = truncPyramidVertexOffset + (UINT)truncPyramid.Vertices.size();
+	UINT tetrahedronVertexOffset = triangularPrismVertexOffset + (UINT)triangularPrism.Vertices.size();
 
 	// Cache the starting index for each object in the concatenated index buffer.
 	UINT boxIndexOffset = 0;
@@ -529,7 +533,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	UINT wedgeIndexOffset = coneIndexOffset + (UINT)cone.Indices32.size();
 	UINT pyramidIndexOffset = wedgeIndexOffset + (UINT)wedge.Indices32.size();
 	UINT truncPyramidIndexOffset = pyramidIndexOffset + (UINT)pyramid.Indices32.size();
-
+	UINT triangularPrismIndexOffset = truncPyramidIndexOffset + (UINT)truncPyramid.Indices32.size();
+	UINT tetrahedronIndexOffset = triangularPrismIndexOffset + (UINT)triangularPrism.Indices32.size();
 
 	SubmeshGeometry boxSubmesh;
 	boxSubmesh.IndexCount = (UINT)box.Indices32.size();
@@ -577,6 +582,16 @@ void LitColumnsApp::BuildShapeGeometry()
 	truncPyramidSubmesh.StartIndexLocation = truncPyramidIndexOffset;
 	truncPyramidSubmesh.BaseVertexLocation = truncPyramidVertexOffset;
 
+	SubmeshGeometry triangularPrismSubmesh;
+	triangularPrismSubmesh.IndexCount = (UINT)triangularPrism.Indices32.size();
+	triangularPrismSubmesh.StartIndexLocation = triangularPrismIndexOffset;
+	triangularPrismSubmesh.BaseVertexLocation = triangularPrismVertexOffset;
+
+	SubmeshGeometry tetrahedronSubmesh;
+	tetrahedronSubmesh.IndexCount = (UINT)tetrahedron.Indices32.size();
+	tetrahedronSubmesh.StartIndexLocation = tetrahedronIndexOffset;
+	tetrahedronSubmesh.BaseVertexLocation = tetrahedronVertexOffset;
+
 	//
 	// Extract the vertex elements we are interested in and pack the
 	// vertices of all the meshes into one vertex buffer.
@@ -591,7 +606,9 @@ void LitColumnsApp::BuildShapeGeometry()
 		cone.Vertices.size() +
 		wedge.Vertices.size() +
 		pyramid.Vertices.size() +
-		truncPyramid.Vertices.size();
+		truncPyramid.Vertices.size() +
+		triangularPrism.Vertices.size() +
+		tetrahedron.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -644,6 +661,16 @@ void LitColumnsApp::BuildShapeGeometry()
 		vertices[k].Pos = truncPyramid.Vertices[i].Position;
 		vertices[k].Normal = truncPyramid.Vertices[i].Normal;
 	}
+	for (size_t i = 0; i < triangularPrism.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = triangularPrism.Vertices[i].Position;
+		vertices[k].Normal = triangularPrism.Vertices[i].Normal;
+	}
+	for (size_t i = 0; i < tetrahedron.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = tetrahedron.Vertices[i].Position;
+		vertices[k].Normal = tetrahedron.Vertices[i].Normal;
+	}
 
 	std::vector<std::uint16_t> indices;
 	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
@@ -655,6 +682,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	indices.insert(indices.end(), std::begin(wedge.GetIndices16()), std::end(wedge.GetIndices16()));
 	indices.insert(indices.end(), std::begin(pyramid.GetIndices16()), std::end(pyramid.GetIndices16()));
 	indices.insert(indices.end(), std::begin(truncPyramid.GetIndices16()), std::end(truncPyramid.GetIndices16()));
+	indices.insert(indices.end(), std::begin(triangularPrism.GetIndices16()), std::end(triangularPrism.GetIndices16()));
+	indices.insert(indices.end(), std::begin(tetrahedron.GetIndices16()), std::end(tetrahedron.GetIndices16()));
 
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
@@ -689,6 +718,9 @@ void LitColumnsApp::BuildShapeGeometry()
 	geo->DrawArgs["wedge"] = wedgeSubmesh;
 	geo->DrawArgs["pyramid"] = pyramidSubmesh;
 	geo->DrawArgs["truncPyramid"] = truncPyramidSubmesh;
+	geo->DrawArgs["triangularPrism"] = triangularPrismSubmesh;
+	geo->DrawArgs["tetrahedron"] = tetrahedronSubmesh;
+	
 
 	mGeometries[geo->Name] = std::move(geo);
 }
@@ -1054,6 +1086,34 @@ void LitColumnsApp::BuildRenderItems()
 	truncPyramidItem->StartIndexLocation = truncPyramidItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 	truncPyramidItem->BaseVertexLocation = truncPyramidItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(truncPyramidItem));
+
+	auto triangularPrismItem = std::make_unique<RenderItem>();
+
+	XMMATRIX triangularPrismWorld = XMMatrixTranslation(2.0f, 1.0f, -3.0f);
+	XMStoreFloat4x4(&triangularPrismItem->World, triangularPrismWorld);
+	triangularPrismItem->TexTransform = MathHelper::Identity4x4();
+	triangularPrismItem->ObjCBIndex = objCBIndex++;
+	triangularPrismItem->Mat = mMaterials["coneMat"].get();
+	triangularPrismItem->Geo = mGeometries["shapeGeo"].get();
+	triangularPrismItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	triangularPrismItem->IndexCount = triangularPrismItem->Geo->DrawArgs["triangularPrism"].IndexCount;
+	triangularPrismItem->StartIndexLocation = triangularPrismItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
+	triangularPrismItem->BaseVertexLocation = triangularPrismItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(triangularPrismItem));
+
+	auto tetrahedronItem = std::make_unique<RenderItem>();
+
+	XMMATRIX tetrahedronWorld = XMMatrixTranslation(4.0f, 1.0f, -3.0f);
+	XMStoreFloat4x4(&tetrahedronItem->World, tetrahedronWorld);
+	tetrahedronItem->TexTransform = MathHelper::Identity4x4();
+	tetrahedronItem->ObjCBIndex = objCBIndex++;
+	tetrahedronItem->Mat = mMaterials["coneMat"].get();
+	tetrahedronItem->Geo = mGeometries["shapeGeo"].get();
+	tetrahedronItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	tetrahedronItem->IndexCount = tetrahedronItem->Geo->DrawArgs["tetrahedron"].IndexCount;
+	tetrahedronItem->StartIndexLocation = tetrahedronItem->Geo->DrawArgs["tetrahedron"].StartIndexLocation;
+	tetrahedronItem->BaseVertexLocation = tetrahedronItem->Geo->DrawArgs["tetrahedron"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(tetrahedronItem));
 
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)

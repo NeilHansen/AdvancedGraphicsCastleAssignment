@@ -116,6 +116,8 @@ public:
 	MeshData CreateWedge(float width, float depth, float height);
 	MeshData CreatePyramid(float width, float depth, float height);
 	MeshData CreateTruncatedPyramid(float bottomWidth, float bottomDepth, float topWidth, float topDepth, float height);
+	MeshData CreateTriangularPrism(float bottomWidth, float bottomLength, float topWidth, float topLength, float height);
+	MeshData CreateTetrahedron(float bottomWidth, float bottomLength, float height);
 
 private:
 	void Subdivide(MeshData& meshData);

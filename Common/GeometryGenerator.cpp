@@ -944,5 +944,96 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bott
 }
 
 // Shape #5 - Triangular Prism
+GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float bottomWidth, float bottomLength, float topWidth, float topLength, float height)
+{
+	MeshData meshData;
+
+	Vertex v[8];
+
+	v[0] = Vertex(-(bottomWidth*0.5f), -(height*0.5f), -(bottomLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-left
+	v[1] = Vertex(-(bottomWidth*0.25f), -(height*0.5f), bottomLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-left
+	v[2] = Vertex(bottomWidth*0.5f, -(height*0.5f), -(bottomLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-right
+	
+
+	v[3] = Vertex(-(topWidth*0.5f), height*0.5f, -(topLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-front-left
+	v[4] = Vertex(-(topWidth*0.25f), height*0.5f, topLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-back-left
+	v[5] = Vertex(topWidth*0.5f, height*0.5f, -(topLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-front-right
+	
+
+	meshData.Vertices.assign(&v[0], &v[6]);
+
+	uint32 i[36];
+
+	// Bottom
+	i[0] = 0;	i[1] = 2;	i[2] = 1;
+	
+
+	// Right Side
+	i[3] = 2;	i[4] = 4;	i[5] = 1;
+	i[6] = 5;	i[7] = 4;	i[8] = 2;
+
+	//Left Side
+	i[9] = 5;	i[10] = 2;	i[11] = 0;
+	i[12] = 0;	i[13] = 3;	i[14] = 5;
+
+	// Back
+	i[15] = 1;	i[16] = 3;	i[17] = 0;
+	i[18] = 4;	i[19] = 3;	i[20] = 1;
+
+	// Top
+	i[21] = 5;	i[22] = 3;	i[23] = 4;
+	
+	meshData.Indices32.assign(&i[0], &i[24]);
+	
+
+	for (uint32 i = 0; i < 3; ++i)
+	{
+		Subdivide(meshData);
+	}
+
+	return meshData;
+}
 
 // Shape #6 - Tetrahedron
+GeometryGenerator::MeshData GeometryGenerator::CreateTetrahedron(float bottomWidth, float bottomLength, float height)
+{
+	MeshData meshData;
+
+	Vertex v[4];
+
+	v[0] = Vertex(-(bottomWidth*0.5f), -(height*0.5f), -(bottomLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-left
+	v[1] = Vertex(-(bottomWidth* 0.5f), -(height*0.5f), bottomLength*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-left
+	v[2] = Vertex(bottomWidth*0.5f, -(height*0.5f), -(bottomLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-right
+
+
+	v[3] = Vertex(-0.5f, height*0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top point
+	
+
+	meshData.Vertices.assign(&v[0], &v[4]);
+
+	uint32 i[36];
+
+	// Bottom
+	i[0] = 0;	i[1] = 3;	i[2] = 1;
+
+
+	// Right Side
+	i[3] = 2;	i[4] = 3;	i[5] = 1;
+	
+	//Left Side
+	i[6] = 0;	i[7] = 3;	i[8] = 2;
+	
+	// Back
+	i[9] = 1;	i[10] = 3;	i[11] = 0;
+	
+
+	meshData.Indices32.assign(&i[0], &i[12]);
+
+
+	for (uint32 i = 0; i < 3; ++i)
+	{
+		Subdivide(meshData);
+	}
+
+	return meshData;
+}
