@@ -943,6 +943,6 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bott
 	return meshData;
 }
 
-// Shape #5 - Triangular Pyramid
+// Shape #5 - Triangular Prism
 
-// Shape #6 - 
+// Shape #6 - Tetrahedron
