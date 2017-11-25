@@ -888,7 +888,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreatePyramid(float width, float 
 	return meshData;
 }
 
-// Shape #3 - Truncated Pyramid
+// Shape #4 - Truncated Pyramid
 GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bottomWidth, float bottomDepth, float topWidth, float topDepth, float height)
 {
 	MeshData meshData;
@@ -942,3 +942,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bott
 
 	return meshData;
 }
+
+// Shape #5 - Triangular Pyramid
+
+// Shape #6 - 
