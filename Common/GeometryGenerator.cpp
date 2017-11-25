@@ -743,49 +743,29 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add n
 	//
 
 	Vertex v[10];
-	float verts = 10.f;
 	
 
 	//Bottom point vert
-	v[0] = Vertex(0.0f, 2.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[0] = Vertex(0.0f, -(height * 0.5f), 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// bottom center point
 	// Used polygon formula to create the large and small octagons
-	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*0.75f, height, sin((1 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[2] = Vertex(cos((2 * (2 * XM_PI)) / 8)*0.75f, height, sin((2 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[3] = Vertex(cos((3 * (2 * XM_PI)) / 8)*0.75f, height, sin((3 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[4] = Vertex(cos((4 * (2 * XM_PI)) / 8)*0.75f, height, sin((4 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[5] = Vertex(cos((5 * (2 * XM_PI)) / 8)*0.75f, height, sin((5 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[6] = Vertex(cos((6 * (2 * XM_PI)) / 8)*0.75f, height, sin((6 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[7] = Vertex(cos((7 * (2 * XM_PI)) / 8)*0.75f, height, sin((7 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[8] = Vertex(cos((8 * (2 * XM_PI)) / 8)*0.75f, height, sin((8 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((1 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[2] = Vertex(cos((2 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((2 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[3] = Vertex(cos((3 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((3 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[4] = Vertex(cos((4 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((4 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[5] = Vertex(cos((5 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((5 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[6] = Vertex(cos((6 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((6 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[7] = Vertex(cos((7 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((7 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[8] = Vertex(cos((8 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((8 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	
 	//top middle point
-	v[9] = Vertex(0.0f, 4.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[9] = Vertex(0.0f, height * 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 	
 	meshData.Vertices.assign(&v[0], &v[10]);
 
 	uint32 i[48];
 
-	i[0] = 0;	i[1] = 2;	i[2] = 1;
-	i[3] = 0;	i[4] = 1;	i[5] = 8;
-	i[6] = 0;	i[7] = 8;	i[8] = 7;
-	i[9] = 0;	i[10] = 7;	i[11] = 6;
-	i[12] = 0;	i[13] = 6;	i[14] = 5;
-	i[15] = 0;	i[16] = 5;	i[17] = 4;
-	i[18] = 0;	i[19] = 4;	i[20] = 3;
-	i[21] = 0;	i[22] = 3;	i[23] = 2;
-
-	i[24] = 1;  i[25] = 2;  i[26] = 9;
-	i[27] = 2;  i[28] = 3;  i[29] = 9;
-	i[30] = 3;  i[31] = 4;  i[32] = 9;
-	i[33] = 4;  i[34] = 5;  i[35] = 9;
-	i[36] = 5;  i[37] = 6;  i[38] = 9;
-	i[39] = 6;  i[40] = 7;  i[41] = 9;
-	i[42] = 7;  i[43] = 8;  i[44] = 9;
-	i[45] = 8;  i[46] = 1;  i[47] = 9;
-
-	/*
 	i[0] = 0;	i[1] = 1;	i[2] = 2;
 	i[3] = 0;	i[4] = 2;	i[5] = 3;
 	i[6] = 0;	i[7] = 3;	i[8] = 4;
@@ -795,16 +775,16 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add n
 	i[18] = 0;	i[19] = 7;	i[20] = 8;
 	i[21] = 0;	i[22] = 8;	i[23] = 1;
 
-	i[24] = 1;  i[25] = 2;  i[26] = 9;
-	i[27] = 2;  i[28] = 3;  i[29] = 9;
-	i[30] = 3;  i[31] = 4;  i[32] = 9;
-	i[33] = 4;  i[34] = 5;  i[35] = 9;
-	i[36] = 5;  i[37] = 6;  i[38] = 9;
-	i[39] = 6;  i[40] = 7;  i[41] = 9;
-	i[42] = 7;  i[43] = 8;  i[44] = 9;
-	i[45] = 8;  i[46] = 1;  i[47] = 9;
-	*/
-	
+	i[24] = 9;  i[25] = 2;  i[26] = 1;
+	i[27] = 9;  i[28] = 1;  i[29] = 8;
+	i[30] = 9;  i[31] = 8;  i[32] = 7;
+	i[33] = 9;  i[34] = 7;  i[35] = 6;
+	i[36] = 9;  i[37] = 6;  i[38] = 5;
+	i[39] = 9;  i[40] = 5;  i[41] = 4;
+	i[42] = 9;  i[43] = 4;  i[44] = 3;
+	i[45] = 9;  i[46] = 3;  i[47] = 2;
+
+
 	meshData.Indices32.assign(&i[0], &i[48]);
 
 	for (uint32 i = 0; i < 3; ++i)
@@ -816,3 +796,51 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add n
 }
 
 // Shape #2 - 
+GeometryGenerator::MeshData GeometryGenerator::CreateWedge(float width, float depth, float height)
+{
+	MeshData meshData;
+
+	//
+	// Create the vertices.
+	//
+
+	Vertex v[6];
+	
+	v[0] = Vertex(-(width*0.5f), -(height*0.5f), -(depth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-left
+	v[1] = Vertex(-(width*0.5f), -(height*0.5f), depth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-left
+	v[2] = Vertex(width*0.5f, -(height*0.5f), -(depth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-right
+	v[3] = Vertex(width*0.5f, -(height*0.5f), depth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-right
+	v[4] = Vertex(width*0.5f, height*0.5f, depth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-right
+	v[5] = Vertex(-(width*0.5f), height*0.5f, depth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-left
+	
+	meshData.Vertices.assign(&v[0], &v[6]);
+
+	uint32 i[25];
+
+	// Bottom
+	i[0] = 0;	i[1] = 2;	i[2] = 1;
+	i[3] = 2;	i[4] = 3;	i[5] = 1;
+
+	// Right Side
+	i[6] = 4;	i[7] = 3;	i[8] = 2;
+
+	// Left Side
+	i[9] = 5;	i[10] = 0;	i[11] = 1;
+
+	// Front
+	i[12] = 2;	i[13] = 0;	i[14] = 5;
+	i[15] = 2;	i[16] = 5;	i[17] = 4;
+
+	// Back
+	i[18] = 5;	i[19] = 1;	i[20] = 3;
+	i[21] = 5;	i[22] = 3;	i[23] = 4;
+
+	meshData.Indices32.assign(&i[0], &i[25]);
+
+	for (uint32 i = 0; i < 3; ++i)
+	{
+		Subdivide(meshData);
+	}
+
+	return meshData;
+}
