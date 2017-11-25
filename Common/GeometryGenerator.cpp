@@ -887,3 +887,58 @@ GeometryGenerator::MeshData GeometryGenerator::CreatePyramid(float width, float 
 
 	return meshData;
 }
+
+// Shape #3 - Truncated Pyramid
+GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bottomWidth, float bottomDepth, float topWidth, float topDepth, float height)
+{
+	MeshData meshData;
+
+	Vertex v[8];
+
+	v[0] = Vertex(-(bottomWidth*0.5f), -(height*0.5f), -(bottomDepth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-left
+	v[1] = Vertex(-(bottomWidth*0.5f), -(height*0.5f), bottomDepth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-left
+	v[2] = Vertex(bottomWidth*0.5f, -(height*0.5f), -(bottomDepth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-right
+	v[3] = Vertex(bottomWidth*0.5f, -(height*0.5f), bottomDepth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-right
+
+	v[4] = Vertex(-(topWidth*0.5f), height*0.5f, -(topDepth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-front-left
+	v[5] = Vertex(-(topWidth*0.5f), height*0.5f, topDepth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-back-left
+	v[6] = Vertex(topWidth*0.5f, height*0.5f, -(topDepth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-front-right
+	v[7] = Vertex(topWidth*0.5f, height*0.5f, topDepth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-back-right
+
+	meshData.Vertices.assign(&v[0], &v[8]);
+
+	uint32 i[36];
+
+	// Bottom
+	i[0] = 0;	i[1] = 2;	i[2] = 1;
+	i[3] = 2;	i[4] = 3;	i[5] = 1;
+
+	// Right Side
+	i[6] = 2;	i[7] = 6;	i[8] = 3;
+	i[9] = 3;	i[10] = 6;	i[11] = 7;
+
+	//Left Side
+	i[12] = 1;	i[13] = 5;	i[14] = 0;
+	i[15] = 0;	i[16] = 5;	i[17] = 4;
+
+	// Front
+	i[18] = 0;	i[19] = 4;	i[20] = 2;
+	i[21] = 2;	i[22] = 4;	i[23] = 6;
+
+	// Back
+	i[24] = 3;	i[25] = 7;	i[26] = 1;
+	i[27] = 1;	i[28] = 7;	i[29] = 5;
+
+	// Top
+	i[30] = 4;	i[31] = 5;	i[32] = 6;
+	i[33] = 6;	i[34] = 5;	i[35] = 7;
+
+	meshData.Indices32.assign(&i[0], &i[36]);
+
+	for (uint32 i = 0; i < 3; ++i)
+	{
+		Subdivide(meshData);
+	}
+
+	return meshData;
+}

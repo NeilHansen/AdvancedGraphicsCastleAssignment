@@ -501,6 +501,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData cone = geoGen.CreateCone(2.0f);
 	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.5f, 1.5f, 2.0f);
 	GeometryGenerator::MeshData pyramid = geoGen.CreatePyramid(1.5f, 1.5f, 2.0f);
+	GeometryGenerator::MeshData truncPyramid = geoGen.CreateTruncatedPyramid(1.5f, 1.5f, 0.75f, 0.75f, 2.0f);
 
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
@@ -516,6 +517,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	UINT coneVertexOffset = diamondVertextOffset + (UINT)diamond.Vertices.size();
 	UINT wedgeVertexOffset = coneVertexOffset + (UINT)cone.Vertices.size();
 	UINT pyramidVertexOffset = wedgeVertexOffset + (UINT)wedge.Vertices.size();
+	UINT truncPyramidVertexOffset = pyramidVertexOffset + (UINT)pyramid.Vertices.size();
 
 	// Cache the starting index for each object in the concatenated index buffer.
 	UINT boxIndexOffset = 0;
@@ -526,6 +528,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	UINT coneIndexOffset = diamondIndexOffset + (UINT)diamond.Indices32.size();
 	UINT wedgeIndexOffset = coneIndexOffset + (UINT)cone.Indices32.size();
 	UINT pyramidIndexOffset = wedgeIndexOffset + (UINT)wedge.Indices32.size();
+	UINT truncPyramidIndexOffset = pyramidIndexOffset + (UINT)pyramid.Indices32.size();
 
 
 	SubmeshGeometry boxSubmesh;
@@ -569,6 +572,11 @@ void LitColumnsApp::BuildShapeGeometry()
 	pyramidSubmesh.StartIndexLocation = pyramidIndexOffset;
 	pyramidSubmesh.BaseVertexLocation = pyramidVertexOffset;
 
+	SubmeshGeometry truncPyramidSubmesh;
+	truncPyramidSubmesh.IndexCount = (UINT)truncPyramid.Indices32.size();
+	truncPyramidSubmesh.StartIndexLocation = truncPyramidIndexOffset;
+	truncPyramidSubmesh.BaseVertexLocation = truncPyramidVertexOffset;
+
 	//
 	// Extract the vertex elements we are interested in and pack the
 	// vertices of all the meshes into one vertex buffer.
@@ -582,7 +590,8 @@ void LitColumnsApp::BuildShapeGeometry()
 		diamond.Vertices.size() +
 		cone.Vertices.size() +
 		wedge.Vertices.size() +
-		pyramid.Vertices.size();
+		pyramid.Vertices.size() +
+		truncPyramid.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -630,6 +639,11 @@ void LitColumnsApp::BuildShapeGeometry()
 		vertices[k].Pos = pyramid.Vertices[i].Position;
 		vertices[k].Normal = pyramid.Vertices[i].Normal;
 	}
+	for (size_t i = 0; i < truncPyramid.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = truncPyramid.Vertices[i].Position;
+		vertices[k].Normal = truncPyramid.Vertices[i].Normal;
+	}
 
 	std::vector<std::uint16_t> indices;
 	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
@@ -640,6 +654,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	indices.insert(indices.end(), std::begin(cone.GetIndices16()), std::end(cone.GetIndices16()));
 	indices.insert(indices.end(), std::begin(wedge.GetIndices16()), std::end(wedge.GetIndices16()));
 	indices.insert(indices.end(), std::begin(pyramid.GetIndices16()), std::end(pyramid.GetIndices16()));
+	indices.insert(indices.end(), std::begin(truncPyramid.GetIndices16()), std::end(truncPyramid.GetIndices16()));
 
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
@@ -673,7 +688,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	geo->DrawArgs["cone"] = coneSubmesh;
 	geo->DrawArgs["wedge"] = wedgeSubmesh;
 	geo->DrawArgs["pyramid"] = pyramidSubmesh;
-
+	geo->DrawArgs["truncPyramid"] = truncPyramidSubmesh;
 
 	mGeometries[geo->Name] = std::move(geo);
 }
@@ -1025,6 +1040,20 @@ void LitColumnsApp::BuildRenderItems()
 	pyramidItem->StartIndexLocation = pyramidItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
 	pyramidItem->BaseVertexLocation = pyramidItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(pyramidItem));
+
+	auto truncPyramidItem = std::make_unique<RenderItem>();
+
+	XMMATRIX truncPyramidWorld = XMMatrixTranslation(4.0f, 1.0f, -5.0f);
+	XMStoreFloat4x4(&truncPyramidItem->World, truncPyramidWorld);
+	truncPyramidItem->TexTransform = MathHelper::Identity4x4();
+	truncPyramidItem->ObjCBIndex = objCBIndex++;
+	truncPyramidItem->Mat = mMaterials["coneMat"].get();
+	truncPyramidItem->Geo = mGeometries["shapeGeo"].get();
+	truncPyramidItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	truncPyramidItem->IndexCount = truncPyramidItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+	truncPyramidItem->StartIndexLocation = truncPyramidItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+	truncPyramidItem->BaseVertexLocation = truncPyramidItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(truncPyramidItem));
 
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)

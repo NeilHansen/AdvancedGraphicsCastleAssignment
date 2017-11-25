@@ -115,6 +115,7 @@ public:
 	MeshData CreateCone(float height);
 	MeshData CreateWedge(float width, float depth, float height);
 	MeshData CreatePyramid(float width, float depth, float height);
+	MeshData CreateTruncatedPyramid(float bottomWidth, float bottomDepth, float topWidth, float topDepth, float height);
 
 private:
 	void Subdivide(MeshData& meshData);
