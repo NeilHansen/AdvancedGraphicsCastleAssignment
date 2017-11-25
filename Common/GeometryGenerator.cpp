@@ -795,7 +795,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add n
 	return meshData;
 }
 
-// Shape #2 - 
+// Shape #2 - Wedge
 GeometryGenerator::MeshData GeometryGenerator::CreateWedge(float width, float depth, float height)
 {
 	MeshData meshData;
@@ -815,7 +815,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateWedge(float width, float de
 	
 	meshData.Vertices.assign(&v[0], &v[6]);
 
-	uint32 i[25];
+	uint32 i[24];
 
 	// Bottom
 	i[0] = 0;	i[1] = 2;	i[2] = 1;
@@ -835,7 +835,50 @@ GeometryGenerator::MeshData GeometryGenerator::CreateWedge(float width, float de
 	i[18] = 5;	i[19] = 1;	i[20] = 3;
 	i[21] = 5;	i[22] = 3;	i[23] = 4;
 
-	meshData.Indices32.assign(&i[0], &i[25]);
+	meshData.Indices32.assign(&i[0], &i[24]);
+
+	for (uint32 i = 0; i < 3; ++i)
+	{
+		Subdivide(meshData);
+	}
+
+	return meshData;
+}
+
+// Shape #3 - Pyramid
+GeometryGenerator::MeshData GeometryGenerator::CreatePyramid(float width, float depth, float height)
+{
+	MeshData meshData;
+
+	Vertex v[5];
+
+	v[0] = Vertex(0.0f, height*0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-center
+	v[1] = Vertex(-(width*0.5f), -(height*0.5f), -(depth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-left
+	v[2] = Vertex(-(width*0.5f), -(height*0.5f), depth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-left
+	v[3] = Vertex(width*0.5f, -(height*0.5f), -(depth*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-front-right
+	v[4] = Vertex(width*0.5f, -(height*0.5f), depth*0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back-right
+
+	meshData.Vertices.assign(&v[0], &v[5]);
+
+	uint32 i[18];
+
+	// Bottom
+	i[0] = 1;	i[1] = 3;	i[2] = 4;
+	i[3] = 1;	i[4] = 4;	i[5] = 2;
+
+	// Right Side
+	i[6] = 0;	i[7] = 2;	i[8] = 4;
+
+	// Left Side
+	i[9] = 0;	i[10] = 3;	i[11] = 1;
+
+	// Front
+	i[12] = 0;	i[13] = 4;	i[14] = 3;
+
+	// Back
+	i[15] = 0;	i[16] = 1;	i[17] = 2;
+
+	meshData.Indices32.assign(&i[0], &i[18]);
 
 	for (uint32 i = 0; i < 3; ++i)
 	{

@@ -500,6 +500,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData diamond = geoGen.CreateDiamondOfDeath(1.25f);
 	GeometryGenerator::MeshData cone = geoGen.CreateCone(2.0f);
 	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.5f, 1.5f, 2.0f);
+	GeometryGenerator::MeshData pyramid = geoGen.CreatePyramid(1.5f, 1.5f, 2.0f);
 
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
@@ -514,6 +515,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	UINT diamondVertextOffset = cylinderVertexOffset + (UINT)cylinder.Vertices.size();
 	UINT coneVertexOffset = diamondVertextOffset + (UINT)diamond.Vertices.size();
 	UINT wedgeVertexOffset = coneVertexOffset + (UINT)cone.Vertices.size();
+	UINT pyramidVertexOffset = wedgeVertexOffset + (UINT)wedge.Vertices.size();
 
 	// Cache the starting index for each object in the concatenated index buffer.
 	UINT boxIndexOffset = 0;
@@ -523,6 +525,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	UINT diamondIndexOffset = cylinderIndexOffset + (UINT)cylinder.Indices32.size();
 	UINT coneIndexOffset = diamondIndexOffset + (UINT)diamond.Indices32.size();
 	UINT wedgeIndexOffset = coneIndexOffset + (UINT)cone.Indices32.size();
+	UINT pyramidIndexOffset = wedgeIndexOffset + (UINT)wedge.Indices32.size();
+
 
 	SubmeshGeometry boxSubmesh;
 	boxSubmesh.IndexCount = (UINT)box.Indices32.size();
@@ -560,6 +564,11 @@ void LitColumnsApp::BuildShapeGeometry()
 	wedgeSubmesh.StartIndexLocation = wedgeIndexOffset;
 	wedgeSubmesh.BaseVertexLocation = wedgeVertexOffset;
 
+	SubmeshGeometry pyramidSubmesh;
+	pyramidSubmesh.IndexCount = (UINT)pyramid.Indices32.size();
+	pyramidSubmesh.StartIndexLocation = pyramidIndexOffset;
+	pyramidSubmesh.BaseVertexLocation = pyramidVertexOffset;
+
 	//
 	// Extract the vertex elements we are interested in and pack the
 	// vertices of all the meshes into one vertex buffer.
@@ -572,7 +581,8 @@ void LitColumnsApp::BuildShapeGeometry()
 		cylinder.Vertices.size() +
 		diamond.Vertices.size() +
 		cone.Vertices.size() +
-		wedge.Vertices.size();
+		wedge.Vertices.size() +
+		pyramid.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -615,6 +625,11 @@ void LitColumnsApp::BuildShapeGeometry()
 		vertices[k].Pos = wedge.Vertices[i].Position;
 		vertices[k].Normal = wedge.Vertices[i].Normal;
 	}
+	for (size_t i = 0; i < pyramid.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = pyramid.Vertices[i].Position;
+		vertices[k].Normal = pyramid.Vertices[i].Normal;
+	}
 
 	std::vector<std::uint16_t> indices;
 	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
@@ -624,6 +639,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	indices.insert(indices.end(), std::begin(diamond.GetIndices16()), std::end(diamond.GetIndices16()));
 	indices.insert(indices.end(), std::begin(cone.GetIndices16()), std::end(cone.GetIndices16()));
 	indices.insert(indices.end(), std::begin(wedge.GetIndices16()), std::end(wedge.GetIndices16()));
+	indices.insert(indices.end(), std::begin(pyramid.GetIndices16()), std::end(pyramid.GetIndices16()));
+
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
     const UINT ibByteSize = (UINT)indices.size()  * sizeof(std::uint16_t);
@@ -655,6 +672,8 @@ void LitColumnsApp::BuildShapeGeometry()
 	geo->DrawArgs["diamond"] = diamondSubmesh;
 	geo->DrawArgs["cone"] = coneSubmesh;
 	geo->DrawArgs["wedge"] = wedgeSubmesh;
+	geo->DrawArgs["pyramid"] = pyramidSubmesh;
+
 
 	mGeometries[geo->Name] = std::move(geo);
 }
@@ -967,7 +986,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	auto coneItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneWorld = XMMatrixTranslation(-1.0f, 1.0f, -5.0f);
+	XMMATRIX coneWorld = XMMatrixTranslation(-2.0f, 1.0f, -5.0f);
 	XMStoreFloat4x4(&coneItem->World, coneWorld);
 	coneItem->TexTransform = MathHelper::Identity4x4();
 	coneItem->ObjCBIndex = objCBIndex++;
@@ -981,7 +1000,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	auto wedgeItem = std::make_unique<RenderItem>();
 
-	XMMATRIX wedgeWorld = XMMatrixTranslation(1.0f, 1.0f, -5.0f);
+	XMMATRIX wedgeWorld = XMMatrixTranslation(0.0f, 1.0f, -5.0f);
 	XMStoreFloat4x4(&wedgeItem->World, wedgeWorld);
 	wedgeItem->TexTransform = MathHelper::Identity4x4();
 	wedgeItem->ObjCBIndex = objCBIndex++;
@@ -992,6 +1011,20 @@ void LitColumnsApp::BuildRenderItems()
 	wedgeItem->StartIndexLocation = wedgeItem->Geo->DrawArgs["wedge"].StartIndexLocation;
 	wedgeItem->BaseVertexLocation = wedgeItem->Geo->DrawArgs["wedge"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(wedgeItem));
+
+	auto pyramidItem = std::make_unique<RenderItem>();
+
+	XMMATRIX pyramidWorld = XMMatrixTranslation(2.0f, 1.0f, -5.0f);
+	XMStoreFloat4x4(&pyramidItem->World, pyramidWorld);
+	pyramidItem->TexTransform = MathHelper::Identity4x4();
+	pyramidItem->ObjCBIndex = objCBIndex++;
+	pyramidItem->Mat = mMaterials["coneMat"].get();
+	pyramidItem->Geo = mGeometries["shapeGeo"].get();
+	pyramidItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	pyramidItem->IndexCount = pyramidItem->Geo->DrawArgs["pyramid"].IndexCount;
+	pyramidItem->StartIndexLocation = pyramidItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
+	pyramidItem->BaseVertexLocation = pyramidItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(pyramidItem));
 
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)

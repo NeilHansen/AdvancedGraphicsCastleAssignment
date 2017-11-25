@@ -114,6 +114,7 @@ public:
 	MeshData CreateDiamondOfDeath(float height);
 	MeshData CreateCone(float height);
 	MeshData CreateWedge(float width, float depth, float height);
+	MeshData CreatePyramid(float width, float depth, float height);
 
 private:
 	void Subdivide(MeshData& meshData);
