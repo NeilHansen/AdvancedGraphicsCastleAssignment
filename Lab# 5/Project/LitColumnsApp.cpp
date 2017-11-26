@@ -503,7 +503,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData pyramid = geoGen.CreatePyramid(1.5f, 1.5f, 2.0f);
 	GeometryGenerator::MeshData truncPyramid = geoGen.CreateTruncatedPyramid(1.5f, 1.5f, 0.75f, 0.75f, 2.0f);
 	GeometryGenerator::MeshData triangularPrism = geoGen.CreateTriangularPrism(1.5f, 1.5f, 1.5f, 1.5f, 2.0f);
-	GeometryGenerator::MeshData tetrahedron = geoGen.CreateTetrahedron(1.5f, 1.5f, 2.0f);
+	GeometryGenerator::MeshData tetrahedron = geoGen.CreateTetrahedron(1.5f, 2.0f);
 
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
