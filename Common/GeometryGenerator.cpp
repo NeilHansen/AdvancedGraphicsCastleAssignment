@@ -944,20 +944,20 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bott
 }
 
 // Shape #5 - Triangular Prism
-GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float bottomWidth, float bottomLength, float topWidth, float topLength, float height)
+GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float bottomSideLength, float topSideLength, float height)
 {
 	MeshData meshData;
 
 	Vertex v[6];
 
-	v[0] = Vertex(-(bottomWidth*0.5f), -(height*0.5f), -(bottomLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-left
-	v[1] = Vertex(-(bottomWidth*0.25f), -(height*0.5f), bottomLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back
-	v[2] = Vertex(bottomWidth*0.5f, -(height*0.5f), -(bottomLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-right
+	v[0] = Vertex(-(bottomSideLength*0.5f), -(height*0.5f), -(bottomSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-left
+	v[1] = Vertex(-(bottomSideLength*0.25f), -(height*0.5f), bottomSideLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back
+	v[2] = Vertex(bottomSideLength*0.5f, -(height*0.5f), -(bottomSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-right
 	
 
-	v[3] = Vertex(-(topWidth*0.5), height*0.5f, -(topLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-Left
-	v[4] = Vertex(-(topWidth*0.25f), height*0.5f, topLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-back
-	v[5] = Vertex(topWidth*0.5f, height*0.5f, -(topLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-right
+	v[3] = Vertex(-(topSideLength*0.5), height*0.5f, -(topSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-Left
+	v[4] = Vertex(-(topSideLength*0.25f), height*0.5f, topSideLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-back
+	v[5] = Vertex(topSideLength*0.5f, height*0.5f, -(topSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-right
 	
 
 	meshData.Vertices.assign(&v[0], &v[6]);
