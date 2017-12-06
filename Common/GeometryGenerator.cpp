@@ -995,36 +995,32 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float botto
 }
 
 // Shape #6 - Tetrahedron
-GeometryGenerator::MeshData GeometryGenerator::CreateTetrahedron(float sideLength, float height)
+GeometryGenerator::MeshData GeometryGenerator::CreateTetrahedron(float width, float height)
 {
 	MeshData meshData;
 
 	Vertex v[4];
 
-	v[0] = Vertex(-(sideLength*0.5f), -(height*0.5f), -(sideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // left
-	v[1] = Vertex(-(sideLength* 0.25f), -(height*0.5f), sideLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // back
-	v[2] = Vertex(sideLength*0.5f, -(height*0.5f), -(sideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // right
-
-
-	v[3] = Vertex(-sideLength *0.25f, height*0.5f, -sideLength * 0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top point
+	v[0] = Vertex(0.0f, height * 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top center
+	v[1] = Vertex(0.0f, -(height * 0.5f), width * 0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom back
+	v[2] = Vertex(-(width * 0.5f), -(height * 0.5f), -(width * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom front left
+	v[3] = Vertex(width * 0.5f, -(height * 0.5f), -(width * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom front right
 	
-
 	meshData.Vertices.assign(&v[0], &v[4]);
 
-	uint32 i[36];
+	uint32 i[12];
 
 	// Bottom
-	i[0] = 0;	i[1] = 3;	i[2] = 1;
+	i[0] = 1;	i[1] = 2;	i[2] = 3;
 
-
-	// Right Side
-	i[3] = 2;	i[4] = 3;	i[5] = 1;
+	// Left
+	i[3] = 1;	i[4] = 0;	i[5] = 2;
 	
-	//Left Side
-	i[6] = 0;	i[7] = 3;	i[8] = 2;
+	// Right
+	i[6] = 1;	i[7] = 3;	i[8] = 0;
 	
-	// Back
-	i[9] = 1;	i[10] = 3;	i[11] = 0;
+	// Front
+	i[9] = 2;	i[10] = 0;	i[11] = 3;
 	
 
 	meshData.Indices32.assign(&i[0], &i[12]);

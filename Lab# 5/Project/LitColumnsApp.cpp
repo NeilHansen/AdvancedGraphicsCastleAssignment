@@ -1148,9 +1148,26 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(coneFLItem));
 
 
+	// Primitive Examples
+	// Cone
+	auto coneItem = std::make_unique<RenderItem>();
+
+	XMMATRIX coneWorld = XMMatrixTranslation(-5.0f, 1.0f, -12.0f);
+	XMStoreFloat4x4(&coneItem->World, coneWorld);
+	coneItem->TexTransform = MathHelper::Identity4x4();
+	coneItem->ObjCBIndex = objCBIndex++;
+	coneItem->Mat = mMaterials["coneMat"].get();
+	coneItem->Geo = mGeometries["shapeGeo"].get();
+	coneItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	coneItem->IndexCount = coneItem->Geo->DrawArgs["cone"].IndexCount;
+	coneItem->StartIndexLocation = coneItem->Geo->DrawArgs["cone"].StartIndexLocation;
+	coneItem->BaseVertexLocation = coneItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(coneItem));
+
+	// Wedge
 	auto wedgeItem = std::make_unique<RenderItem>();
 
-	XMMATRIX wedgeWorld = XMMatrixTranslation(0.0f, 1.0f, -5.0f);
+	XMMATRIX wedgeWorld = XMMatrixTranslation(-3.0f, 1.0f, -12.0f);
 	XMStoreFloat4x4(&wedgeItem->World, wedgeWorld);
 	wedgeItem->TexTransform = MathHelper::Identity4x4();
 	wedgeItem->ObjCBIndex = objCBIndex++;
@@ -1162,9 +1179,10 @@ void LitColumnsApp::BuildRenderItems()
 	wedgeItem->BaseVertexLocation = wedgeItem->Geo->DrawArgs["wedge"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(wedgeItem));
 
+	// Pyramid
 	auto pyramidItem = std::make_unique<RenderItem>();
 
-	XMMATRIX pyramidWorld = XMMatrixTranslation(2.0f, 1.0f, -5.0f);
+	XMMATRIX pyramidWorld = XMMatrixTranslation(-1.0f, 1.0f, -12.0f);
 	XMStoreFloat4x4(&pyramidItem->World, pyramidWorld);
 	pyramidItem->TexTransform = MathHelper::Identity4x4();
 	pyramidItem->ObjCBIndex = objCBIndex++;
@@ -1176,9 +1194,10 @@ void LitColumnsApp::BuildRenderItems()
 	pyramidItem->BaseVertexLocation = pyramidItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(pyramidItem));
 
+	// Truncated pyramid
 	auto truncPyramidItem = std::make_unique<RenderItem>();
 
-	XMMATRIX truncPyramidWorld = XMMatrixTranslation(4.0f, 1.0f, -5.0f);
+	XMMATRIX truncPyramidWorld = XMMatrixTranslation(1.0f, 1.0f, -12.0f);
 	XMStoreFloat4x4(&truncPyramidItem->World, truncPyramidWorld);
 	truncPyramidItem->TexTransform = MathHelper::Identity4x4();
 	truncPyramidItem->ObjCBIndex = objCBIndex++;
@@ -1190,9 +1209,10 @@ void LitColumnsApp::BuildRenderItems()
 	truncPyramidItem->BaseVertexLocation = truncPyramidItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(truncPyramidItem));
 
+	// Triangular prism
 	auto triangularPrismItem = std::make_unique<RenderItem>();
 
-	XMMATRIX triangularPrismWorld = XMMatrixTranslation(2.0f, 1.0f, -3.0f);
+	XMMATRIX triangularPrismWorld = XMMatrixTranslation(3.0f, 1.0f, -12.0f);
 	XMStoreFloat4x4(&triangularPrismItem->World, triangularPrismWorld);
 	triangularPrismItem->TexTransform = MathHelper::Identity4x4();
 	triangularPrismItem->ObjCBIndex = objCBIndex++;
@@ -1204,9 +1224,10 @@ void LitColumnsApp::BuildRenderItems()
 	triangularPrismItem->BaseVertexLocation = triangularPrismItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(triangularPrismItem));
 
+	// Tetrahedron
 	auto tetrahedronItem = std::make_unique<RenderItem>();
 
-	XMMATRIX tetrahedronWorld = XMMatrixTranslation(4.0f, 1.0f, -3.0f);
+	XMMATRIX tetrahedronWorld = XMMatrixTranslation(5.0f, 1.0f, -12.0f);
 	XMStoreFloat4x4(&tetrahedronItem->World, tetrahedronWorld);
 	tetrahedronItem->TexTransform = MathHelper::Identity4x4();
 	tetrahedronItem->ObjCBIndex = objCBIndex++;
