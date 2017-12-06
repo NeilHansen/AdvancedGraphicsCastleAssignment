@@ -886,8 +886,8 @@ void LitColumnsApp::BuildMaterials()
 
 	auto coneMat = std::make_unique<Material>();
 	coneMat->Name = "coneMat";
-	coneMat->MatCBIndex = 4;
-	coneMat->DiffuseSrvHeapIndex = 4;
+	coneMat->MatCBIndex = 5;
+	coneMat->DiffuseSrvHeapIndex = 5;
 	coneMat->DiffuseAlbedo = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 	coneMat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.15f);
 	coneMat->Roughness = 0.9f;
@@ -919,7 +919,7 @@ void LitColumnsApp::BuildRenderItems()
     auto gridRitem = std::make_unique<RenderItem>();
     gridRitem->World = MathHelper::Identity4x4();
 	XMStoreFloat4x4(&gridRitem->TexTransform, XMMatrixScaling(8.0f, 8.0f, 1.0f));
-	gridRitem->ObjCBIndex = 1;
+	gridRitem->ObjCBIndex = 0;
 	gridRitem->Mat = mMaterials["tile0"].get();
 	gridRitem->Geo = mGeometries["shapeGeo"].get();
 	gridRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -929,7 +929,7 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(gridRitem));
 
 	
-	UINT objCBIndex = 2;
+	UINT objCBIndex = 1;
 	/*XMMATRIX brickTexTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	
 	for(int i = 0; i < 5; ++i)
