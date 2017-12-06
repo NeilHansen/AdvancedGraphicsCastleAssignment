@@ -496,7 +496,7 @@ void LitColumnsApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData box = geoGen.CreateBox(1.5f, 0.5f, 1.5f, 3);
 	GeometryGenerator::MeshData grid = geoGen.CreateGrid(20.0f, 30.0f, 60, 40);
 	GeometryGenerator::MeshData sphere = geoGen.CreateSphere(0.5f, 20, 20);
-	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.8f, 0.8f, 5.0f, 20, 20);
+	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.7f, 0.7f, 5.0f, 20, 20);
 	GeometryGenerator::MeshData diamond = geoGen.CreateDiamondOfDeath(1.25f);
 	GeometryGenerator::MeshData cone = geoGen.CreateCone(2.0f);
 	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.5f, 1.5f, 2.0f);
@@ -1038,8 +1038,24 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(cylinderFRItem));
 
 
+	//Front Left cylinder
+	auto cylinderFLItem = std::make_unique<RenderItem>();
 
-	auto diamondRitem = std::make_unique<RenderItem>();
+	XMMATRIX cylinderFLWorld = XMMatrixTranslation(-8.0f, 1.0f, -10.0f);
+	XMStoreFloat4x4(&cylinderFLItem->World, cylinderFLWorld);
+	cylinderFLItem->TexTransform = MathHelper::Identity4x4();
+	cylinderFLItem->ObjCBIndex = objCBIndex++;
+	cylinderFLItem->Mat = mMaterials["stone0"].get();
+	cylinderFLItem->Geo = mGeometries["shapeGeo"].get();
+	cylinderFLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cylinderFLItem->IndexCount = cylinderFLItem->Geo->DrawArgs["cylinder"].IndexCount;
+	cylinderFLItem->StartIndexLocation = cylinderFLItem->Geo->DrawArgs["cylinder"].StartIndexLocation;
+	cylinderFLItem->BaseVertexLocation = cylinderFLItem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cylinderFLItem));
+
+
+
+	/*auto diamondRitem = std::make_unique<RenderItem>();
 
 	XMMATRIX diamondWorld = XMMatrixTranslation(0.75f, 2.25f, -0.5f);
 	XMStoreFloat4x4(&diamondRitem->World, diamondWorld);
@@ -1066,8 +1082,10 @@ void LitColumnsApp::BuildRenderItems()
 	diamondLitem->IndexCount = diamondLitem->Geo->DrawArgs["diamond"].IndexCount;
 	diamondLitem->StartIndexLocation = diamondLitem->Geo->DrawArgs["diamond"].StartIndexLocation;
 	diamondLitem->BaseVertexLocation = diamondLitem->Geo->DrawArgs["diamond"].BaseVertexLocation;
-	mAllRitems.push_back(std::move(diamondLitem));
+	mAllRitems.push_back(std::move(diamondLitem));*/
 
+
+	//Back Right Cone
 	auto coneBRItem = std::make_unique<RenderItem>();
 
 	XMMATRIX coneBRWorld = XMMatrixTranslation(8.0f, 4.5f, 10.0f);
@@ -1081,6 +1099,54 @@ void LitColumnsApp::BuildRenderItems()
 	coneBRItem->StartIndexLocation = coneBRItem->Geo->DrawArgs["cone"].StartIndexLocation;
 	coneBRItem->BaseVertexLocation = coneBRItem->Geo->DrawArgs["cone"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(coneBRItem));
+
+
+	//Back Left Cone
+	auto coneBLItem = std::make_unique<RenderItem>();
+
+	XMMATRIX coneBLWorld = XMMatrixTranslation(-8.0f, 4.5f, 10.0f);
+	XMStoreFloat4x4(&coneBLItem->World, coneBLWorld);
+	coneBLItem->TexTransform = MathHelper::Identity4x4();
+	coneBLItem->ObjCBIndex = objCBIndex++;
+	coneBLItem->Mat = mMaterials["coneMat"].get();
+	coneBLItem->Geo = mGeometries["shapeGeo"].get();
+	coneBLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	coneBLItem->IndexCount = coneBLItem->Geo->DrawArgs["cone"].IndexCount;
+	coneBLItem->StartIndexLocation = coneBLItem->Geo->DrawArgs["cone"].StartIndexLocation;
+	coneBLItem->BaseVertexLocation = coneBLItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(coneBLItem));
+
+
+	//Front Right Cone
+	auto coneFRItem = std::make_unique<RenderItem>();
+
+	XMMATRIX coneFRWorld = XMMatrixTranslation(8.0f, 4.5f, -10.0f);
+	XMStoreFloat4x4(&coneFRItem->World, coneFRWorld);
+	coneFRItem->TexTransform = MathHelper::Identity4x4();
+	coneFRItem->ObjCBIndex = objCBIndex++;
+	coneFRItem->Mat = mMaterials["coneMat"].get();
+	coneFRItem->Geo = mGeometries["shapeGeo"].get();
+	coneFRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	coneFRItem->IndexCount = coneFRItem->Geo->DrawArgs["cone"].IndexCount;
+	coneFRItem->StartIndexLocation = coneFRItem->Geo->DrawArgs["cone"].StartIndexLocation;
+	coneFRItem->BaseVertexLocation = coneFRItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(coneFRItem));
+
+	//Front Left Cone
+	auto coneFLItem = std::make_unique<RenderItem>();
+
+	XMMATRIX coneFLWorld = XMMatrixTranslation(-8.0f, 4.5f, -10.0f);
+	XMStoreFloat4x4(&coneFLItem->World, coneFLWorld);
+	coneFLItem->TexTransform = MathHelper::Identity4x4();
+	coneFLItem->ObjCBIndex = objCBIndex++;
+	coneFLItem->Mat = mMaterials["coneMat"].get();
+	coneFLItem->Geo = mGeometries["shapeGeo"].get();
+	coneFLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	coneFLItem->IndexCount = coneFLItem->Geo->DrawArgs["cone"].IndexCount;
+	coneFLItem->StartIndexLocation = coneFLItem->Geo->DrawArgs["cone"].StartIndexLocation;
+	coneFLItem->BaseVertexLocation = coneFLItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(coneFLItem));
+
 
 	auto wedgeItem = std::make_unique<RenderItem>();
 
