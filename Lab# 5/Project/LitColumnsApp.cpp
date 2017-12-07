@@ -1135,8 +1135,13 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(wallFBItem));
 
 
+	// Wall Tops
+	// Left Wall Top
+	
+
+
 	// Front
-	// Ramp
+	// Outside Ramp
 	auto rampItem = std::make_unique<RenderItem>();
 	XMMATRIX rampWorld = XMMatrixScaling(4.75f, 0.5f, 1.5f) * XMMatrixTranslation(0.0f, 0.25, -12.0f);
 	XMStoreFloat4x4(&rampItem->World, rampWorld);
@@ -1150,13 +1155,23 @@ void LitColumnsApp::BuildRenderItems()
 	rampItem->BaseVertexLocation = rampItem->Geo->DrawArgs["wedge"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(rampItem));
 
-
-
+	auto rampInItem = std::make_unique<RenderItem>();
+	XMMATRIX rampInWorld = XMMatrixRotationY(180.0f * (XM_PI / 180.0f)) * XMMatrixScaling(4.75f, 0.5f, 1.5f) * XMMatrixTranslation(0.0f, 0.25, -9.0f);
+	XMStoreFloat4x4(&rampInItem->World, rampInWorld);
+	rampInItem->TexTransform = MathHelper::Identity4x4();
+	rampInItem->ObjCBIndex = objCBIndex++;
+	rampInItem->Mat = mMaterials["coneMat"].get();
+	rampInItem->Geo = mGeometries["shapeGeo"].get();
+	rampInItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	rampInItem->IndexCount = rampInItem->Geo->DrawArgs["wedge"].IndexCount;
+	rampInItem->StartIndexLocation = rampInItem->Geo->DrawArgs["wedge"].StartIndexLocation;
+	rampInItem->BaseVertexLocation = rampInItem->Geo->DrawArgs["wedge"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(rampInItem));
+	
 
 	// Primitive Examples
 	// Cone 
 	auto coneItem = std::make_unique<RenderItem>();
-
 	XMMATRIX coneWorld = XMMatrixRotationY(0.0f * (XM_PI / 180.0f)) * XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-5.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&coneItem->World, coneWorld);
 	coneItem->TexTransform = MathHelper::Identity4x4();
@@ -1171,7 +1186,6 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Wedge
 	auto wedgeItem = std::make_unique<RenderItem>();
-
 	XMMATRIX wedgeWorld  = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-3.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&wedgeItem->World, wedgeWorld);
 	wedgeItem->TexTransform = MathHelper::Identity4x4();
@@ -1186,7 +1200,6 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Pyramid
 	auto pyramidItem = std::make_unique<RenderItem>();
-
 	XMMATRIX pyramidWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-1.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&pyramidItem->World, pyramidWorld);
 	pyramidItem->TexTransform = MathHelper::Identity4x4();
@@ -1201,7 +1214,6 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Truncated pyramid
 	auto truncPyramidItem = std::make_unique<RenderItem>();
-
 	XMMATRIX truncPyramidWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(1.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&truncPyramidItem->World, truncPyramidWorld);
 	truncPyramidItem->TexTransform = MathHelper::Identity4x4();
@@ -1216,7 +1228,6 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Triangular prism
 	auto triangularPrismItem = std::make_unique<RenderItem>();
-
 	XMMATRIX triangularPrismWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(3.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&triangularPrismItem->World, triangularPrismWorld);
 	triangularPrismItem->TexTransform = MathHelper::Identity4x4();
@@ -1231,7 +1242,6 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Tetrahedron
 	auto tetrahedronItem = std::make_unique<RenderItem>();
-
 	XMMATRIX tetrahedronWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(5.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&tetrahedronItem->World, tetrahedronWorld);
 	tetrahedronItem->TexTransform = MathHelper::Identity4x4();
