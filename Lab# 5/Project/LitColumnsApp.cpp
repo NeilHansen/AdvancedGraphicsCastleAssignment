@@ -1271,9 +1271,39 @@ void LitColumnsApp::BuildRenderItems()
 	pyramidRoofItem->BaseVertexLocation = pyramidRoofItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(pyramidRoofItem));
 
+	// Left tower Cube
+	auto cubeTowerLItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeTowerLWorld = XMMatrixScaling(3.0f, 6.0f, 4.0f) * XMMatrixTranslation(-6.5f, 3.0f, 4.0f);
+	XMStoreFloat4x4(&cubeTowerLItem->World, cubeTowerLWorld);
+	cubeTowerLItem->TexTransform = MathHelper::Identity4x4();
+	cubeTowerLItem->ObjCBIndex = objCBIndex++;
+	cubeTowerLItem->Mat = mMaterials["coneMat"].get();
+	cubeTowerLItem->Geo = mGeometries["shapeGeo"].get();
+	cubeTowerLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeTowerLItem->IndexCount = cubeTowerLItem->Geo->DrawArgs["box"].IndexCount;
+	cubeTowerLItem->StartIndexLocation = cubeTowerLItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeTowerLItem->BaseVertexLocation = cubeTowerLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeTowerLItem));
+
+	// Left tower Top
+	// TruncacatedPyramid 
+	auto truncTopLItem = std::make_unique<RenderItem>();
+	XMMATRIX truncTopLWorld = XMMatrixScaling(3.0f,3.0f, 4.0f) * XMMatrixTranslation(-6.5f, 7.5f, 4.0f);
+	XMStoreFloat4x4(&truncTopLItem->World, truncTopLWorld);
+	truncTopLItem->TexTransform = MathHelper::Identity4x4();
+	truncTopLItem->ObjCBIndex = objCBIndex++;
+	truncTopLItem->Mat = mMaterials["coneMat"].get();
+	truncTopLItem->Geo = mGeometries["shapeGeo"].get();
+	truncTopLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	truncTopLItem->IndexCount = truncTopLItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+	truncTopLItem->StartIndexLocation = truncTopLItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+	truncTopLItem->BaseVertexLocation = truncTopLItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(truncTopLItem));
+
+
 	// Right tower Cube
 	auto cubeTowerRItem = std::make_unique<RenderItem>();
-	XMMATRIX cubeTowerRWorld = XMMatrixScaling(3.0f, 8.0f, 4.0f) * XMMatrixTranslation(-6.5f, 4.0f, 4.0f);
+	XMMATRIX cubeTowerRWorld = XMMatrixScaling(3.0f, 6.0f, 4.0f) * XMMatrixTranslation(6.5f, 3.0f, 4.0f);
 	XMStoreFloat4x4(&cubeTowerRItem->World, cubeTowerRWorld);
 	cubeTowerRItem->TexTransform = MathHelper::Identity4x4();
 	cubeTowerRItem->ObjCBIndex = objCBIndex++;
@@ -1286,19 +1316,19 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(cubeTowerRItem));
 
 	// Right tower Top
-	// Tetrahedron
-	auto tetrahedronTopRItem = std::make_unique<RenderItem>();
-	XMMATRIX tetrahedronTopRWorld = XMMatrixRotationY(180.0f * (XM_PI / 180.0f)) * XMMatrixScaling(4.0f,4.0f, 4.0f) * XMMatrixTranslation(-6.5f, 10.0f, 4.0f);
-	XMStoreFloat4x4(&tetrahedronTopRItem->World, tetrahedronTopRWorld);
-	tetrahedronTopRItem->TexTransform = MathHelper::Identity4x4();
-	tetrahedronTopRItem->ObjCBIndex = objCBIndex++;
-	tetrahedronTopRItem->Mat = mMaterials["coneMat"].get();
-	tetrahedronTopRItem->Geo = mGeometries["shapeGeo"].get();
-	tetrahedronTopRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	tetrahedronTopRItem->IndexCount = tetrahedronTopRItem->Geo->DrawArgs["tetrahedron"].IndexCount;
-	tetrahedronTopRItem->StartIndexLocation = tetrahedronTopRItem->Geo->DrawArgs["tetrahedron"].StartIndexLocation;
-	tetrahedronTopRItem->BaseVertexLocation = tetrahedronTopRItem->Geo->DrawArgs["tetrahedron"].BaseVertexLocation;
-	mAllRitems.push_back(std::move(tetrahedronTopRItem));
+	// TruncacatedPyramid 
+	auto truncTopRItem = std::make_unique<RenderItem>();
+	XMMATRIX truncTopRWorld = XMMatrixScaling(3.0f, 3.0f, 4.0f) * XMMatrixTranslation(6.5f, 7.5f, 4.0f);
+	XMStoreFloat4x4(&truncTopRItem->World, truncTopRWorld);
+	truncTopRItem->TexTransform = MathHelper::Identity4x4();
+	truncTopRItem->ObjCBIndex = objCBIndex++;
+	truncTopRItem->Mat = mMaterials["coneMat"].get();
+	truncTopRItem->Geo = mGeometries["shapeGeo"].get();
+	truncTopRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	truncTopRItem->IndexCount = truncTopRItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+	truncTopRItem->StartIndexLocation = truncTopRItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+	truncTopRItem->BaseVertexLocation = truncTopRItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(truncTopRItem));
 
 
 	// Primitive Examples
