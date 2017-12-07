@@ -734,7 +734,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateDiamondOfDeath(float height
 }
 
 // Shape #1 - Cone
-GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add number of steps for circular top
+GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height, float radius) // Add number of steps for circular top
 {
 	MeshData meshData;
 
@@ -750,14 +750,14 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add n
 
 	// bottom center point
 	// Used polygon formula to create the large and small octagons
-	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((1 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[2] = Vertex(cos((2 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((2 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[3] = Vertex(cos((3 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((3 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[4] = Vertex(cos((4 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((4 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[5] = Vertex(cos((5 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((5 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[6] = Vertex(cos((6 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((6 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[7] = Vertex(cos((7 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((7 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[8] = Vertex(cos((8 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((8 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((1 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[2] = Vertex(cos((2 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((2 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[3] = Vertex(cos((3 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((3 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[4] = Vertex(cos((4 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((4 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[5] = Vertex(cos((5 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((5 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[6] = Vertex(cos((6 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((6 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[7] = Vertex(cos((7 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((7 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[8] = Vertex(cos((8 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((8 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	
 	//top middle point
 	v[9] = Vertex(0.0f, height * 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
@@ -944,17 +944,16 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTruncatedPyramid(float bott
 }
 
 // Shape #5 - Triangular Prism
-GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float bottomSideLength, float topSideLength, float height)
+GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float width, float depth, float height)
 {
 	MeshData meshData;
 
+	/*
 	Vertex v[6];
 
 	v[0] = Vertex(-(bottomSideLength*0.5f), -(height*0.5f), -(bottomSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-left
 	v[1] = Vertex(-(bottomSideLength*0.25f), -(height*0.5f), bottomSideLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-back
 	v[2] = Vertex(bottomSideLength*0.5f, -(height*0.5f), -(bottomSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom-right
-	
-
 	v[3] = Vertex(-(topSideLength*0.5), height*0.5f, -(topSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-Left
 	v[4] = Vertex(-(topSideLength*0.25f), height*0.5f, topSideLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-back
 	v[5] = Vertex(topSideLength*0.5f, height*0.5f, -(topSideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top-right
@@ -963,7 +962,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float botto
 	meshData.Vertices.assign(&v[0], &v[6]);
 
 	uint32 i[36];
-
+	
 	// Bottom
 	i[0] = 0;	i[1] = 2;	i[2] = 1;
 	
@@ -982,7 +981,42 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float botto
 
 	// Top
 	i[21] = 5;	i[22] = 3;	i[23] = 4;
-	
+	*/
+
+	Vertex v[6];
+
+	v[0] = Vertex(-(width * 0.5f), -(height * 0.5f), depth * 0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom back left
+	v[1] = Vertex(width * 0.5f, -(height * 0.5f), depth * 0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom back right
+	v[2] = Vertex(-(width * 0.5f), -(height * 0.5f), -(depth * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom front left
+	v[3] = Vertex(width * 0.5f, -(height * 0.5f), -(depth * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom front right
+
+	v[4] = Vertex(0.0f, height * 0.5f, depth * 0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top back
+	v[5] = Vertex(0.0f, height * 0.5f, -(depth * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top front
+
+
+	meshData.Vertices.assign(&v[0], &v[6]);
+
+	uint32 i[36];
+
+	// Bottom
+	i[0] = 0;	i[1] = 2;	i[2] = 3;
+	i[3] = 0;	i[4] = 3;	i[5] = 1;
+
+	// Left
+	i[6] = 0;	i[7] = 5;	i[8] = 2;
+	i[9] = 0;	i[10] = 4;	i[11] = 5;
+
+	// Right
+	i[12] = 3;	i[13] = 4;	i[14] = 1;
+	i[15] = 3;	i[16] = 5;	i[17] = 4;
+
+	// Back
+	i[18] = 4;	i[19] = 0;	i[20] = 1;
+
+	// Front
+	i[21] = 5;	i[22] = 3;	i[23] = 2;
+
+
 	meshData.Indices32.assign(&i[0], &i[24]);
 	
 
@@ -995,36 +1029,32 @@ GeometryGenerator::MeshData GeometryGenerator::CreateTriangularPrism(float botto
 }
 
 // Shape #6 - Tetrahedron
-GeometryGenerator::MeshData GeometryGenerator::CreateTetrahedron(float sideLength, float height)
+GeometryGenerator::MeshData GeometryGenerator::CreateTetrahedron(float width, float height)
 {
 	MeshData meshData;
 
 	Vertex v[4];
 
-	v[0] = Vertex(-(sideLength*0.5f), -(height*0.5f), -(sideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // left
-	v[1] = Vertex(-(sideLength* 0.25f), -(height*0.5f), sideLength*0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // back
-	v[2] = Vertex(sideLength*0.5f, -(height*0.5f), -(sideLength*0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // right
-
-
-	v[3] = Vertex(-sideLength *0.25f, height*0.5f, -sideLength * 0.25f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top point
+	v[0] = Vertex(0.0f, height * 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // top center
+	v[1] = Vertex(0.0f, -(height * 0.5f), width * 0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom back
+	v[2] = Vertex(-(width * 0.5f), -(height * 0.5f), -(width * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom front left
+	v[3] = Vertex(width * 0.5f, -(height * 0.5f), -(width * 0.5f), 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f); // bottom front right
 	
-
 	meshData.Vertices.assign(&v[0], &v[4]);
 
-	uint32 i[36];
+	uint32 i[12];
 
 	// Bottom
-	i[0] = 0;	i[1] = 3;	i[2] = 1;
+	i[0] = 1;	i[1] = 2;	i[2] = 3;
 
-
-	// Right Side
-	i[3] = 2;	i[4] = 3;	i[5] = 1;
+	// Left
+	i[3] = 1;	i[4] = 0;	i[5] = 2;
 	
-	//Left Side
-	i[6] = 0;	i[7] = 3;	i[8] = 2;
+	// Right
+	i[6] = 1;	i[7] = 3;	i[8] = 0;
 	
-	// Back
-	i[9] = 1;	i[10] = 3;	i[11] = 0;
+	// Front
+	i[9] = 2;	i[10] = 0;	i[11] = 3;
 	
 
 	meshData.Indices32.assign(&i[0], &i[12]);
