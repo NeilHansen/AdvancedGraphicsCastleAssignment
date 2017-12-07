@@ -494,11 +494,15 @@ void LitColumnsApp::BuildShapeGeometry()
 {
     GeometryGenerator geoGen;
 	GeometryGenerator::MeshData box = geoGen.CreateBox(1.5f, 0.5f, 1.5f, 3);
-	GeometryGenerator::MeshData grid = geoGen.CreateGrid(20.0f, 30.0f, 60, 40);
+	GeometryGenerator::MeshData grid = geoGen.CreateGrid(25.0f, 25.0f, 50, 50);
 	GeometryGenerator::MeshData sphere = geoGen.CreateSphere(0.5f, 20, 20);
-	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.7f, 0.7f, 5.0f, 20, 20);
+	
+	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(1.5f, 1.5f, 6.0f, 20, 20); // Main Pillar
+
 	GeometryGenerator::MeshData diamond = geoGen.CreateDiamondOfDeath(1.25f);
-	GeometryGenerator::MeshData cone = geoGen.CreateCone(2.0f);
+
+	GeometryGenerator::MeshData cone = geoGen.CreateCone(2.0f, 1.5f); // Main Pillar Top
+
 	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.5f, 1.5f, 2.0f);
 	GeometryGenerator::MeshData pyramid = geoGen.CreatePyramid(1.5f, 1.5f, 2.0f);
 	GeometryGenerator::MeshData truncPyramid = geoGen.CreateTruncatedPyramid(1.5f, 1.5f, 0.75f, 0.75f, 2.0f);
@@ -918,7 +922,7 @@ void LitColumnsApp::BuildRenderItems()
 
     auto gridRitem = std::make_unique<RenderItem>();
     gridRitem->World = MathHelper::Identity4x4();
-	XMStoreFloat4x4(&gridRitem->TexTransform, XMMatrixScaling(8.0f, 8.0f, 1.0f));
+	XMStoreFloat4x4(&gridRitem->TexTransform, XMMatrixScaling(12.0f, 12.0f, 1.0f));
 	gridRitem->ObjCBIndex = 0;
 	gridRitem->Mat = mMaterials["tile0"].get();
 	gridRitem->Geo = mGeometries["shapeGeo"].get();
@@ -994,7 +998,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Back Right cylinder
 	auto cylinderBRItem = std::make_unique<RenderItem>();
 
-	XMMATRIX cylinderBRWorld = XMMatrixTranslation(8.0f, 1.0f, 10.0f);
+	XMMATRIX cylinderBRWorld = XMMatrixTranslation(10.5f, 3.0f, 10.5f);
 	XMStoreFloat4x4(&cylinderBRItem->World, cylinderBRWorld);
 	cylinderBRItem->TexTransform = MathHelper::Identity4x4();
 	cylinderBRItem->ObjCBIndex = objCBIndex++;
@@ -1009,7 +1013,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Back Left cylinder
 	auto cylinderBLItem = std::make_unique<RenderItem>();
 
-	XMMATRIX cylinderBLWorld = XMMatrixTranslation(-8.0f, 1.0f, 10.0f);
+	XMMATRIX cylinderBLWorld = XMMatrixTranslation(-10.5f, 3.0f, 10.5f);
 	XMStoreFloat4x4(&cylinderBLItem->World, cylinderBLWorld);
 	cylinderBLItem->TexTransform = MathHelper::Identity4x4();
 	cylinderBLItem->ObjCBIndex = objCBIndex++;
@@ -1025,7 +1029,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Front Right cylinder
 	auto cylinderFRItem = std::make_unique<RenderItem>();
 
-	XMMATRIX cylinderFRWorld = XMMatrixTranslation(8.0f, 1.0f, -10.0f);
+	XMMATRIX cylinderFRWorld = XMMatrixTranslation(10.5f, 3.0f, -10.5f);
 	XMStoreFloat4x4(&cylinderFRItem->World, cylinderFRWorld);
 	cylinderFRItem->TexTransform = MathHelper::Identity4x4();
 	cylinderFRItem->ObjCBIndex = objCBIndex++;
@@ -1041,7 +1045,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Front Left cylinder
 	auto cylinderFLItem = std::make_unique<RenderItem>();
 
-	XMMATRIX cylinderFLWorld = XMMatrixTranslation(-8.0f, 1.0f, -10.0f);
+	XMMATRIX cylinderFLWorld = XMMatrixTranslation(-10.5f, 3.0f, -10.5f);
 	XMStoreFloat4x4(&cylinderFLItem->World, cylinderFLWorld);
 	cylinderFLItem->TexTransform = MathHelper::Identity4x4();
 	cylinderFLItem->ObjCBIndex = objCBIndex++;
@@ -1088,7 +1092,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Back Right Cone
 	auto coneBRItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneBRWorld = XMMatrixTranslation(8.0f, 4.5f, 10.0f);
+	XMMATRIX coneBRWorld = XMMatrixTranslation(10.5f, 7.0f, 10.5f);
 	XMStoreFloat4x4(&coneBRItem->World, coneBRWorld);
 	coneBRItem->TexTransform = MathHelper::Identity4x4();
 	coneBRItem->ObjCBIndex = objCBIndex++;
@@ -1104,7 +1108,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Back Left Cone
 	auto coneBLItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneBLWorld = XMMatrixTranslation(-8.0f, 4.5f, 10.0f);
+	XMMATRIX coneBLWorld = XMMatrixTranslation(-10.5f, 7.0f, 10.5f);
 	XMStoreFloat4x4(&coneBLItem->World, coneBLWorld);
 	coneBLItem->TexTransform = MathHelper::Identity4x4();
 	coneBLItem->ObjCBIndex = objCBIndex++;
@@ -1120,7 +1124,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Front Right Cone
 	auto coneFRItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneFRWorld = XMMatrixTranslation(8.0f, 4.5f, -10.0f);
+	XMMATRIX coneFRWorld = XMMatrixTranslation(10.5f, 7.0f, -10.5f);
 	XMStoreFloat4x4(&coneFRItem->World, coneFRWorld);
 	coneFRItem->TexTransform = MathHelper::Identity4x4();
 	coneFRItem->ObjCBIndex = objCBIndex++;
@@ -1135,7 +1139,7 @@ void LitColumnsApp::BuildRenderItems()
 	//Front Left Cone
 	auto coneFLItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneFLWorld = XMMatrixTranslation(-8.0f, 4.5f, -10.0f);
+	XMMATRIX coneFLWorld = XMMatrixTranslation(-10.5f, 7.0f, -10.5f);
 	XMStoreFloat4x4(&coneFLItem->World, coneFLWorld);
 	coneFLItem->TexTransform = MathHelper::Identity4x4();
 	coneFLItem->ObjCBIndex = objCBIndex++;
@@ -1149,10 +1153,11 @@ void LitColumnsApp::BuildRenderItems()
 
 
 	// Primitive Examples
-	// Cone
+	// Cone 
+
 	auto coneItem = std::make_unique<RenderItem>();
 
-	XMMATRIX coneWorld = XMMatrixTranslation(-5.0f, 1.0f, -12.0f);
+	XMMATRIX coneWorld = XMMatrixTranslation(-5.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&coneItem->World, coneWorld);
 	coneItem->TexTransform = MathHelper::Identity4x4();
 	coneItem->ObjCBIndex = objCBIndex++;
@@ -1164,10 +1169,11 @@ void LitColumnsApp::BuildRenderItems()
 	coneItem->BaseVertexLocation = coneItem->Geo->DrawArgs["cone"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(coneItem));
 
+
 	// Wedge
 	auto wedgeItem = std::make_unique<RenderItem>();
 
-	XMMATRIX wedgeWorld = XMMatrixTranslation(-3.0f, 1.0f, -12.0f);
+	XMMATRIX wedgeWorld = XMMatrixTranslation(-3.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&wedgeItem->World, wedgeWorld);
 	wedgeItem->TexTransform = MathHelper::Identity4x4();
 	wedgeItem->ObjCBIndex = objCBIndex++;
@@ -1182,7 +1188,7 @@ void LitColumnsApp::BuildRenderItems()
 	// Pyramid
 	auto pyramidItem = std::make_unique<RenderItem>();
 
-	XMMATRIX pyramidWorld = XMMatrixTranslation(-1.0f, 1.0f, -12.0f);
+	XMMATRIX pyramidWorld = XMMatrixTranslation(-1.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&pyramidItem->World, pyramidWorld);
 	pyramidItem->TexTransform = MathHelper::Identity4x4();
 	pyramidItem->ObjCBIndex = objCBIndex++;
@@ -1197,7 +1203,7 @@ void LitColumnsApp::BuildRenderItems()
 	// Truncated pyramid
 	auto truncPyramidItem = std::make_unique<RenderItem>();
 
-	XMMATRIX truncPyramidWorld = XMMatrixTranslation(1.0f, 1.0f, -12.0f);
+	XMMATRIX truncPyramidWorld = XMMatrixTranslation(1.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&truncPyramidItem->World, truncPyramidWorld);
 	truncPyramidItem->TexTransform = MathHelper::Identity4x4();
 	truncPyramidItem->ObjCBIndex = objCBIndex++;
@@ -1212,7 +1218,7 @@ void LitColumnsApp::BuildRenderItems()
 	// Triangular prism
 	auto triangularPrismItem = std::make_unique<RenderItem>();
 
-	XMMATRIX triangularPrismWorld = XMMatrixTranslation(3.0f, 1.0f, -12.0f);
+	XMMATRIX triangularPrismWorld = XMMatrixTranslation(3.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&triangularPrismItem->World, triangularPrismWorld);
 	triangularPrismItem->TexTransform = MathHelper::Identity4x4();
 	triangularPrismItem->ObjCBIndex = objCBIndex++;
@@ -1227,7 +1233,7 @@ void LitColumnsApp::BuildRenderItems()
 	// Tetrahedron
 	auto tetrahedronItem = std::make_unique<RenderItem>();
 
-	XMMATRIX tetrahedronWorld = XMMatrixTranslation(5.0f, 1.0f, -12.0f);
+	XMMATRIX tetrahedronWorld = XMMatrixTranslation(5.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&tetrahedronItem->World, tetrahedronWorld);
 	tetrahedronItem->TexTransform = MathHelper::Identity4x4();
 	tetrahedronItem->ObjCBIndex = objCBIndex++;

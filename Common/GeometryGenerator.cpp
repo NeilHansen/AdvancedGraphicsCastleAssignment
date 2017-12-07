@@ -734,7 +734,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateDiamondOfDeath(float height
 }
 
 // Shape #1 - Cone
-GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add number of steps for circular top
+GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height, float radius) // Add number of steps for circular top
 {
 	MeshData meshData;
 
@@ -750,14 +750,14 @@ GeometryGenerator::MeshData GeometryGenerator::CreateCone(float height) // Add n
 
 	// bottom center point
 	// Used polygon formula to create the large and small octagons
-	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((1 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[2] = Vertex(cos((2 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((2 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[3] = Vertex(cos((3 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((3 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[4] = Vertex(cos((4 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((4 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[5] = Vertex(cos((5 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((5 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[6] = Vertex(cos((6 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((6 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[7] = Vertex(cos((7 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((7 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[8] = Vertex(cos((8 * (2 * XM_PI)) / 8)*0.75f, -(height * 0.5f), sin((8 * (2 * XM_PI)) / 8)*0.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[1] = Vertex(cos((1 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((1 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[2] = Vertex(cos((2 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((2 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[3] = Vertex(cos((3 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((3 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[4] = Vertex(cos((4 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((4 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[5] = Vertex(cos((5 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((5 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[6] = Vertex(cos((6 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((6 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[7] = Vertex(cos((7 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((7 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[8] = Vertex(cos((8 * (2 * XM_PI)) / 8)*radius, -(height * 0.5f), sin((8 * (2 * XM_PI)) / 8)*radius, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	
 	//top middle point
 	v[9] = Vertex(0.0f, height * 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
