@@ -1137,7 +1137,21 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Wall Tops
 	// Left Wall Top
-	
+
+	// For top of walls
+	// Triangular prism wall top
+	auto triangularPrismBItem = std::make_unique<RenderItem>();
+	XMMATRIX triangularPrismBWorld = XMMatrixRotationY(90.0f * (XM_PI / 180.0f)) * XMMatrixScaling(1.5f, 2.0f, 1.5f) *  XMMatrixTranslation(8.2f, 5.0f, 10.5f);
+	XMStoreFloat4x4(&triangularPrismBItem->World, triangularPrismBWorld);
+	triangularPrismBItem->TexTransform = MathHelper::Identity4x4();
+	triangularPrismBItem->ObjCBIndex = objCBIndex++;
+	triangularPrismBItem->Mat = mMaterials["coneMat"].get();
+	triangularPrismBItem->Geo = mGeometries["shapeGeo"].get();
+	triangularPrismBItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	triangularPrismBItem->IndexCount = triangularPrismBItem->Geo->DrawArgs["triangularPrism"].IndexCount;
+	triangularPrismBItem->StartIndexLocation = triangularPrismBItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
+	triangularPrismBItem->BaseVertexLocation = triangularPrismBItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(triangularPrismBItem));
 
 
 	// Front
@@ -1169,10 +1183,128 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(rampInItem));
 	
 
+	// Castle Wall Back
+	auto castleWallBItem = std::make_unique<RenderItem>();
+	XMMATRIX castleWallBWorld = XMMatrixScaling(10.0f, 5.0f, 0.5f) * XMMatrixTranslation(0.0f, 2.5f, 7.8f);
+	XMStoreFloat4x4(&castleWallBItem->World, castleWallBWorld);
+	castleWallBItem->TexTransform = MathHelper::Identity4x4();
+	castleWallBItem->ObjCBIndex = objCBIndex++;
+	castleWallBItem->Mat = mMaterials["coneMat"].get();
+	castleWallBItem->Geo = mGeometries["shapeGeo"].get();
+	castleWallBItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	castleWallBItem->IndexCount = castleWallBItem->Geo->DrawArgs["box"].IndexCount;
+	castleWallBItem->StartIndexLocation = castleWallBItem->Geo->DrawArgs["box"].StartIndexLocation;
+	castleWallBItem->BaseVertexLocation = castleWallBItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(castleWallBItem));
+
+
+	// Castle Wall Right
+	auto castleWallRItem = std::make_unique<RenderItem>();
+	XMMATRIX castleWallRWorld = XMMatrixScaling(0.5f, 5.0f, 10.0f) * XMMatrixTranslation(5.0f, 2.5f, 3.05f);
+	XMStoreFloat4x4(&castleWallRItem->World, castleWallRWorld);
+	castleWallRItem->TexTransform = MathHelper::Identity4x4();
+	castleWallRItem->ObjCBIndex = objCBIndex++;
+	castleWallRItem->Mat = mMaterials["coneMat"].get();
+	castleWallRItem->Geo = mGeometries["shapeGeo"].get();
+	castleWallRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	castleWallRItem->IndexCount = castleWallRItem->Geo->DrawArgs["box"].IndexCount;
+	castleWallRItem->StartIndexLocation = castleWallRItem->Geo->DrawArgs["box"].StartIndexLocation;
+	castleWallRItem->BaseVertexLocation = castleWallRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(castleWallRItem));
+
+	// Castle Wall Left
+	auto castleWallLItem = std::make_unique<RenderItem>();
+	XMMATRIX castleWallLWorld = XMMatrixScaling(0.5f, 5.0f, 10.0f) * XMMatrixTranslation(-5.0f, 2.5f, 3.05f);
+	XMStoreFloat4x4(&castleWallLItem->World, castleWallLWorld);
+	castleWallLItem->TexTransform = MathHelper::Identity4x4();
+	castleWallLItem->ObjCBIndex = objCBIndex++;
+	castleWallLItem->Mat = mMaterials["coneMat"].get();
+	castleWallLItem->Geo = mGeometries["shapeGeo"].get();
+	castleWallLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	castleWallLItem->IndexCount = castleWallLItem->Geo->DrawArgs["box"].IndexCount;
+	castleWallLItem->StartIndexLocation = castleWallLItem->Geo->DrawArgs["box"].StartIndexLocation;
+	castleWallLItem->BaseVertexLocation = castleWallLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(castleWallLItem));
+
+
+	// Castle Wall Front Left
+	auto castleWallFLItem = std::make_unique<RenderItem>();
+	XMMATRIX castleWallFLWorld = XMMatrixScaling(4.0f, 5.0f, 0.5f) * XMMatrixTranslation(-3.25f, 2.5f, -2.0f);
+	XMStoreFloat4x4(&castleWallFLItem->World, castleWallFLWorld);
+	castleWallFLItem->TexTransform = MathHelper::Identity4x4();
+	castleWallFLItem->ObjCBIndex = objCBIndex++;
+	castleWallFLItem->Mat = mMaterials["coneMat"].get();
+	castleWallFLItem->Geo = mGeometries["shapeGeo"].get();
+	castleWallFLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	castleWallFLItem->IndexCount = castleWallFLItem->Geo->DrawArgs["box"].IndexCount;
+	castleWallFLItem->StartIndexLocation = castleWallFLItem->Geo->DrawArgs["box"].StartIndexLocation;
+	castleWallFLItem->BaseVertexLocation = castleWallFLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(castleWallFLItem));
+
+
+	// Castle Wall Front Right
+	auto castleWallFRItem = std::make_unique<RenderItem>();
+	XMMATRIX castleWallFRWorld = XMMatrixScaling(4.0f, 5.0f, 0.5f) * XMMatrixTranslation(3.25f, 2.5f, -2.0f);
+	XMStoreFloat4x4(&castleWallFRItem->World, castleWallFRWorld);
+	castleWallFRItem->TexTransform = MathHelper::Identity4x4();
+	castleWallFRItem->ObjCBIndex = objCBIndex++;
+	castleWallFRItem->Mat = mMaterials["coneMat"].get();
+	castleWallFRItem->Geo = mGeometries["shapeGeo"].get();
+	castleWallFRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	castleWallFRItem->IndexCount = castleWallFRItem->Geo->DrawArgs["box"].IndexCount;
+	castleWallFRItem->StartIndexLocation = castleWallFRItem->Geo->DrawArgs["box"].StartIndexLocation;
+	castleWallFRItem->BaseVertexLocation = castleWallFRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(castleWallFRItem));
+
+
+	//Castle Roof Pyramid
+	auto pyramidRoofItem = std::make_unique<RenderItem>();
+	XMMATRIX pyramidRoofWorld = XMMatrixScaling(10.5f, 4.0f, 10.5f) * XMMatrixTranslation(0.0f, 7.0f, 2.75f);
+	XMStoreFloat4x4(&pyramidRoofItem->World, pyramidRoofWorld);
+	pyramidRoofItem->TexTransform = MathHelper::Identity4x4();
+	pyramidRoofItem->ObjCBIndex = objCBIndex++;
+	pyramidRoofItem->Mat = mMaterials["coneMat"].get();
+	pyramidRoofItem->Geo = mGeometries["shapeGeo"].get();
+	pyramidRoofItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	pyramidRoofItem->IndexCount = pyramidRoofItem->Geo->DrawArgs["pyramid"].IndexCount;
+	pyramidRoofItem->StartIndexLocation = pyramidRoofItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
+	pyramidRoofItem->BaseVertexLocation = pyramidRoofItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(pyramidRoofItem));
+
+	// Right tower Cube
+	auto cubeTowerRItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeTowerRWorld = XMMatrixScaling(3.0f, 8.0f, 4.0f) * XMMatrixTranslation(-6.5f, 4.0f, 4.0f);
+	XMStoreFloat4x4(&cubeTowerRItem->World, cubeTowerRWorld);
+	cubeTowerRItem->TexTransform = MathHelper::Identity4x4();
+	cubeTowerRItem->ObjCBIndex = objCBIndex++;
+	cubeTowerRItem->Mat = mMaterials["coneMat"].get();
+	cubeTowerRItem->Geo = mGeometries["shapeGeo"].get();
+	cubeTowerRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeTowerRItem->IndexCount = cubeTowerRItem->Geo->DrawArgs["box"].IndexCount;
+	cubeTowerRItem->StartIndexLocation = cubeTowerRItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeTowerRItem->BaseVertexLocation = cubeTowerRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeTowerRItem));
+
+	// Right tower Top
+	// Tetrahedron
+	auto tetrahedronTopRItem = std::make_unique<RenderItem>();
+	XMMATRIX tetrahedronTopRWorld = XMMatrixRotationY(180.0f * (XM_PI / 180.0f)) * XMMatrixScaling(4.0f,4.0f, 4.0f) * XMMatrixTranslation(-6.5f, 10.0f, 4.0f);
+	XMStoreFloat4x4(&tetrahedronTopRItem->World, tetrahedronTopRWorld);
+	tetrahedronTopRItem->TexTransform = MathHelper::Identity4x4();
+	tetrahedronTopRItem->ObjCBIndex = objCBIndex++;
+	tetrahedronTopRItem->Mat = mMaterials["coneMat"].get();
+	tetrahedronTopRItem->Geo = mGeometries["shapeGeo"].get();
+	tetrahedronTopRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	tetrahedronTopRItem->IndexCount = tetrahedronTopRItem->Geo->DrawArgs["tetrahedron"].IndexCount;
+	tetrahedronTopRItem->StartIndexLocation = tetrahedronTopRItem->Geo->DrawArgs["tetrahedron"].StartIndexLocation;
+	tetrahedronTopRItem->BaseVertexLocation = tetrahedronTopRItem->Geo->DrawArgs["tetrahedron"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(tetrahedronTopRItem));
+
+
 	// Primitive Examples
 	// Cone 
 	auto coneItem = std::make_unique<RenderItem>();
-	XMMATRIX coneWorld = XMMatrixRotationY(0.0f * (XM_PI / 180.0f)) * XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-5.0f, 1.0f, 0.0f);
+	XMMATRIX coneWorld = XMMatrixRotationY(0.0f * (XM_PI / 180.0f)) * XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-5.0f, 1.0f, -4.0f);
 	XMStoreFloat4x4(&coneItem->World, coneWorld);
 	coneItem->TexTransform = MathHelper::Identity4x4();
 	coneItem->ObjCBIndex = objCBIndex++;
@@ -1186,7 +1318,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Wedge
 	auto wedgeItem = std::make_unique<RenderItem>();
-	XMMATRIX wedgeWorld  = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-3.0f, 1.0f, 0.0f);
+	XMMATRIX wedgeWorld  = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-3.0f, 1.0f, -4.0f);
 	XMStoreFloat4x4(&wedgeItem->World, wedgeWorld);
 	wedgeItem->TexTransform = MathHelper::Identity4x4();
 	wedgeItem->ObjCBIndex = objCBIndex++;
@@ -1200,7 +1332,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Pyramid
 	auto pyramidItem = std::make_unique<RenderItem>();
-	XMMATRIX pyramidWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-1.0f, 1.0f, 0.0f);
+	XMMATRIX pyramidWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(-1.0f, 1.0f, -4.0f);
 	XMStoreFloat4x4(&pyramidItem->World, pyramidWorld);
 	pyramidItem->TexTransform = MathHelper::Identity4x4();
 	pyramidItem->ObjCBIndex = objCBIndex++;
@@ -1214,7 +1346,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Truncated pyramid
 	auto truncPyramidItem = std::make_unique<RenderItem>();
-	XMMATRIX truncPyramidWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(1.0f, 1.0f, 0.0f);
+	XMMATRIX truncPyramidWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(1.0f, 1.0f, -4.0f);
 	XMStoreFloat4x4(&truncPyramidItem->World, truncPyramidWorld);
 	truncPyramidItem->TexTransform = MathHelper::Identity4x4();
 	truncPyramidItem->ObjCBIndex = objCBIndex++;
@@ -1228,7 +1360,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Triangular prism
 	auto triangularPrismItem = std::make_unique<RenderItem>();
-	XMMATRIX triangularPrismWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(3.0f, 1.0f, 0.0f);
+	XMMATRIX triangularPrismWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(3.0f, 1.0f, -4.0f);
 	XMStoreFloat4x4(&triangularPrismItem->World, triangularPrismWorld);
 	triangularPrismItem->TexTransform = MathHelper::Identity4x4();
 	triangularPrismItem->ObjCBIndex = objCBIndex++;
@@ -1242,7 +1374,7 @@ void LitColumnsApp::BuildRenderItems()
 
 	// Tetrahedron
 	auto tetrahedronItem = std::make_unique<RenderItem>();
-	XMMATRIX tetrahedronWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(5.0f, 1.0f, 0.0f);
+	XMMATRIX tetrahedronWorld = XMMatrixScaling(1.5f, 2.0f, 1.5f) * XMMatrixTranslation(5.0f, 1.0f, -4.0f);
 	XMStoreFloat4x4(&tetrahedronItem->World, tetrahedronWorld);
 	tetrahedronItem->TexTransform = MathHelper::Identity4x4();
 	tetrahedronItem->ObjCBIndex = objCBIndex++;
