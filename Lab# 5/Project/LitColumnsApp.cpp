@@ -1331,6 +1331,22 @@ void LitColumnsApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(truncTopRItem));
 
 
+
+	// Right House long Cube
+	auto cubeHouseLItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseLWorld = XMMatrixScaling(2.0f, 2.0f, 5.0f) * XMMatrixTranslation(7.5f, 1.0f, -6.5f);
+	XMStoreFloat4x4(&cubeHouseLItem->World, cubeHouseLWorld);
+	cubeHouseLItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseLItem->ObjCBIndex = objCBIndex++;
+	cubeHouseLItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseLItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseLItem->IndexCount = cubeHouseLItem->Geo->DrawArgs["box"].IndexCount;
+	cubeHouseLItem->StartIndexLocation = cubeHouseLItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeHouseLItem->BaseVertexLocation = cubeHouseLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseLItem));
+
+
 	// Primitive Examples
 	// Cone 
 	auto coneItem = std::make_unique<RenderItem>();
