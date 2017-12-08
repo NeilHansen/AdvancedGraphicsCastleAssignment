@@ -1333,8 +1333,98 @@ void LitColumnsApp::BuildRenderItems()
 
 
 	// Right House long Cube
+	auto cubeHouseRItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseRWorld = XMMatrixScaling(2.0f, 2.0f, 5.0f) * XMMatrixTranslation(7.5f, 1.0f, -6.5f);
+	XMStoreFloat4x4(&cubeHouseRItem->World, cubeHouseRWorld);
+	cubeHouseRItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseRItem->ObjCBIndex = objCBIndex++;
+	cubeHouseRItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseRItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseRItem->IndexCount = cubeHouseRItem->Geo->DrawArgs["box"].IndexCount;
+	cubeHouseRItem->StartIndexLocation = cubeHouseRItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeHouseRItem->BaseVertexLocation = cubeHouseRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseRItem));
+
+
+	// Right House long Pyramid Top
+	auto cubeHouseRTopItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseRTopWorld = XMMatrixScaling(2.0f, 2.0f, 5.0f) * XMMatrixTranslation(7.5f, 3.0f, -6.5f);
+	XMStoreFloat4x4(&cubeHouseRTopItem->World, cubeHouseRTopWorld);
+	cubeHouseRTopItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseRTopItem->ObjCBIndex = objCBIndex++;
+	cubeHouseRTopItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseRTopItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseRTopItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseRTopItem->IndexCount = cubeHouseRTopItem->Geo->DrawArgs["pyramid"].IndexCount;
+	cubeHouseRTopItem->StartIndexLocation = cubeHouseRTopItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
+	cubeHouseRTopItem->BaseVertexLocation = cubeHouseRTopItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseRTopItem));
+
+
+	// Right House Small house front Cube
+	auto cubeHouseSFItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseSFWorld = XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(5.0f, 0.5f, -6.0f);
+	XMStoreFloat4x4(&cubeHouseSFItem->World, cubeHouseSFWorld);
+	cubeHouseSFItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseSFItem->ObjCBIndex = objCBIndex++;
+	cubeHouseSFItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseSFItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseSFItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseSFItem->IndexCount = cubeHouseSFItem->Geo->DrawArgs["box"].IndexCount;
+	cubeHouseSFItem->StartIndexLocation = cubeHouseSFItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeHouseSFItem->BaseVertexLocation = cubeHouseSFItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseSFItem));
+
+
+	// Right House Small house front Cube Top
+	auto cubeHouseSFTItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseSFTWorld = XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(5.0f, 1.5f, -6.0f);
+	XMStoreFloat4x4(&cubeHouseSFTItem->World, cubeHouseSFTWorld);
+	cubeHouseSFTItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseSFTItem->ObjCBIndex = objCBIndex++;
+	cubeHouseSFTItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseSFTItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseSFTItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseSFTItem->IndexCount = cubeHouseSFTItem->Geo->DrawArgs["pyramid"].IndexCount;
+	cubeHouseSFTItem->StartIndexLocation = cubeHouseSFTItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
+	cubeHouseSFTItem->BaseVertexLocation = cubeHouseSFTItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseSFTItem));
+
+	
+	// Right House Small house back Cube
+	auto cubeHouseSBItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseSBWorld = XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(5.0f, 0.5f, -8.0f);
+	XMStoreFloat4x4(&cubeHouseSBItem->World, cubeHouseSBWorld);
+	cubeHouseSBItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseSBItem->ObjCBIndex = objCBIndex++;
+	cubeHouseSBItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseSBItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseSBItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseSBItem->IndexCount = cubeHouseSBItem->Geo->DrawArgs["box"].IndexCount;
+	cubeHouseSBItem->StartIndexLocation = cubeHouseSBItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeHouseSBItem->BaseVertexLocation = cubeHouseSBItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseSBItem));
+
+	
+	// Right House Small house back Cube Top
+	auto cubeHouseSBTItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseSBTWorld = XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(5.0f, 1.5f, -8.0f);
+	XMStoreFloat4x4(&cubeHouseSBTItem->World, cubeHouseSBTWorld);
+	cubeHouseSBTItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseSBTItem->ObjCBIndex = objCBIndex++;
+	cubeHouseSBTItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseSBTItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseSBTItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseSBTItem->IndexCount = cubeHouseSBTItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+	cubeHouseSBTItem->StartIndexLocation = cubeHouseSBTItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+	cubeHouseSBTItem->BaseVertexLocation = cubeHouseSBTItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseSBTItem));
+
+
+	// Left House long Cube
 	auto cubeHouseLItem = std::make_unique<RenderItem>();
-	XMMATRIX cubeHouseLWorld = XMMatrixScaling(2.0f, 2.0f, 5.0f) * XMMatrixTranslation(7.5f, 1.0f, -6.5f);
+	XMMATRIX cubeHouseLWorld = XMMatrixScaling(2.0f, 2.0f, 6.0f) * XMMatrixTranslation(-7.5f, 1.0f, -5.5f);
 	XMStoreFloat4x4(&cubeHouseLItem->World, cubeHouseLWorld);
 	cubeHouseLItem->TexTransform = MathHelper::Identity4x4();
 	cubeHouseLItem->ObjCBIndex = objCBIndex++;
@@ -1345,6 +1435,51 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseLItem->StartIndexLocation = cubeHouseLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeHouseLItem->BaseVertexLocation = cubeHouseLItem->Geo->DrawArgs["box"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(cubeHouseLItem));
+
+
+	// Left House long Cube L
+	auto cubeHouseLLItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseLLWorld = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-5.5f, 1.0f, -7.5f);
+	XMStoreFloat4x4(&cubeHouseLLItem->World, cubeHouseLLWorld);
+	cubeHouseLLItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseLLItem->ObjCBIndex = objCBIndex++;
+	cubeHouseLLItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseLLItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseLLItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseLLItem->IndexCount = cubeHouseLLItem->Geo->DrawArgs["box"].IndexCount;
+	cubeHouseLLItem->StartIndexLocation = cubeHouseLLItem->Geo->DrawArgs["box"].StartIndexLocation;
+	cubeHouseLLItem->BaseVertexLocation = cubeHouseLLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseLLItem));
+
+
+	// Left House long top
+	auto cubeHouseLTItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseLTWorld = XMMatrixScaling(2.0f, 2.0f, 6.0f) * XMMatrixTranslation(-7.5f, 3.0f, -5.5f);
+	XMStoreFloat4x4(&cubeHouseLTItem->World, cubeHouseLTWorld);
+	cubeHouseLTItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseLTItem->ObjCBIndex = objCBIndex++;
+	cubeHouseLTItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseLTItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseLTItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseLTItem->IndexCount = cubeHouseLTItem->Geo->DrawArgs["triangularPrism"].IndexCount;
+	cubeHouseLTItem->StartIndexLocation = cubeHouseLTItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
+	cubeHouseLTItem->BaseVertexLocation = cubeHouseLTItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseLTItem));
+
+
+	// Left House long Cube L Top
+	auto cubeHouseLLTItem = std::make_unique<RenderItem>();
+	XMMATRIX cubeHouseLLTWorld = XMMatrixRotationY(90.0f * (XM_PI / 180.0f)) * XMMatrixScaling(3.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 3.0f, -7.5f);
+	XMStoreFloat4x4(&cubeHouseLLTItem->World, cubeHouseLLTWorld);
+	cubeHouseLLTItem->TexTransform = MathHelper::Identity4x4();
+	cubeHouseLLTItem->ObjCBIndex = objCBIndex++;
+	cubeHouseLLTItem->Mat = mMaterials["coneMat"].get();
+	cubeHouseLLTItem->Geo = mGeometries["shapeGeo"].get();
+	cubeHouseLLTItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	cubeHouseLLTItem->IndexCount = cubeHouseLLTItem->Geo->DrawArgs["triangularPrism"].IndexCount;
+	cubeHouseLLTItem->StartIndexLocation = cubeHouseLLTItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
+	cubeHouseLLTItem->BaseVertexLocation = cubeHouseLLTItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(cubeHouseLLTItem));
 
 
 	// Primitive Examples
