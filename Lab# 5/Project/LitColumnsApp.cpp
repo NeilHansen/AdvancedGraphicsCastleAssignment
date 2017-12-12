@@ -912,11 +912,13 @@ void LitColumnsApp::BuildMaterials()
 
 void LitColumnsApp::BuildRenderItems()
 {
+	UINT objCBIndex = 0;
+
 	// Grid
     auto gridRitem = std::make_unique<RenderItem>();
     gridRitem->World = MathHelper::Identity4x4();
 	XMStoreFloat4x4(&gridRitem->TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
-	gridRitem->ObjCBIndex = 0;
+	gridRitem->ObjCBIndex = objCBIndex++;
 	gridRitem->Mat = mMaterials["tile0"].get();
 	gridRitem->Geo = mGeometries["shapeGeo"].get();
 	gridRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -924,8 +926,6 @@ void LitColumnsApp::BuildRenderItems()
     gridRitem->StartIndexLocation = gridRitem->Geo->DrawArgs["grid"].StartIndexLocation;
     gridRitem->BaseVertexLocation = gridRitem->Geo->DrawArgs["grid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(gridRitem));
-
-	UINT objCBIndex = 1;
 
 
 	//Main Pillars
@@ -935,7 +935,7 @@ void LitColumnsApp::BuildRenderItems()
 	XMStoreFloat4x4(&cylinderBRItem->World, cylinderBRWorld);
 	cylinderBRItem->TexTransform = MathHelper::Identity4x4();
 	cylinderBRItem->ObjCBIndex = objCBIndex++;
-	cylinderBRItem->Mat = mMaterials["stone0"].get();
+	cylinderBRItem->Mat = mMaterials["wallMat"].get();
 	cylinderBRItem->Geo = mGeometries["shapeGeo"].get();
 	cylinderBRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	cylinderBRItem->IndexCount = cylinderBRItem->Geo->DrawArgs["cylinder"].IndexCount;
@@ -1143,24 +1143,94 @@ void LitColumnsApp::BuildRenderItems()
 
 
 	// Wall Tops
-	// Left Wall Top
+	XMMATRIX rotation = XMMatrixRotationY(0.0f);
+	XMMATRIX scaling = XMMatrixScaling(1.5f, 1.0f, 1.5f);
+	XMMATRIX translation = XMMatrixTranslation(8.0f, 4.0f, 10.5f);
+	float spacing = 4.0f;
 
+	// Back Wall Tops
+	for (int i = 0; i < 5; i++)
+	{
+		translation = XMMatrixTranslation(8.0f - (i * spacing), 4.5f, 10.5f);
+		
+		XMMATRIX triangularPrismBWorld = rotation * scaling * translation;
 
+		auto wallTopItem = std::make_unique<RenderItem>();
+		
+		XMStoreFloat4x4(&wallTopItem->World, triangularPrismBWorld);
+		wallTopItem->TexTransform = MathHelper::Identity4x4();
+		wallTopItem->ObjCBIndex = objCBIndex++;
+		wallTopItem->Mat = mMaterials["wallMat"].get();
+		wallTopItem->Geo = mGeometries["shapeGeo"].get();
+		wallTopItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mAllRitems.push_back(std::move(wallTopItem));
+	}
 
-	// For top of walls
-	// Triangular prism wall top
-	auto triangularPrismBItem = std::make_unique<RenderItem>();
-	XMMATRIX triangularPrismBWorld = XMMatrixRotationY(90.0f * (XM_PI / 180.0f)) * XMMatrixScaling(1.5f, 2.0f, 1.5f) *  XMMatrixTranslation(8.2f, 5.0f, 10.5f);
-	XMStoreFloat4x4(&triangularPrismBItem->World, triangularPrismBWorld);
-	triangularPrismBItem->TexTransform = MathHelper::Identity4x4();
-	triangularPrismBItem->ObjCBIndex = objCBIndex++;
-	triangularPrismBItem->Mat = mMaterials["coneMat"].get();
-	triangularPrismBItem->Geo = mGeometries["shapeGeo"].get();
-	triangularPrismBItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	triangularPrismBItem->IndexCount = triangularPrismBItem->Geo->DrawArgs["triangularPrism"].IndexCount;
-	triangularPrismBItem->StartIndexLocation = triangularPrismBItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
-	triangularPrismBItem->BaseVertexLocation = triangularPrismBItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
-	mAllRitems.push_back(std::move(triangularPrismBItem));
+	// Front wall tops
+	for (int i = 0; i < 5; i++)
+	{
+		translation = XMMatrixTranslation(8.0f - (i * spacing), 4.5f, -10.5f);
+
+		XMMATRIX triangularPrismBWorld = rotation * scaling * translation;
+
+		auto wallTopItem = std::make_unique<RenderItem>();
+
+		XMStoreFloat4x4(&wallTopItem->World, triangularPrismBWorld);
+		wallTopItem->TexTransform = MathHelper::Identity4x4();
+		wallTopItem->ObjCBIndex = objCBIndex++;
+		wallTopItem->Mat = mMaterials["wallMat"].get();
+		wallTopItem->Geo = mGeometries["shapeGeo"].get();
+		wallTopItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mAllRitems.push_back(std::move(wallTopItem));
+	}
+
+	// Left Wall Tops
+	for (int i = 0; i < 5; i++)
+	{
+		translation = XMMatrixTranslation(-10.5f, 4.5f, 8.0f - (i * spacing));
+
+		XMMATRIX triangularPrismBWorld = rotation * scaling * translation;
+
+		auto wallTopItem = std::make_unique<RenderItem>();
+
+		XMStoreFloat4x4(&wallTopItem->World, triangularPrismBWorld);
+		wallTopItem->TexTransform = MathHelper::Identity4x4();
+		wallTopItem->ObjCBIndex = objCBIndex++;
+		wallTopItem->Mat = mMaterials["wallMat"].get();
+		wallTopItem->Geo = mGeometries["shapeGeo"].get();
+		wallTopItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mAllRitems.push_back(std::move(wallTopItem));
+	}
+
+	// Right Wall Tops
+	for (int i = 0; i < 5; i++)
+	{
+		translation = XMMatrixTranslation(10.5f, 4.5f, 8.0f - (i * spacing));
+
+		XMMATRIX triangularPrismBWorld = rotation * scaling * translation;
+
+		auto wallTopItem = std::make_unique<RenderItem>();
+
+		XMStoreFloat4x4(&wallTopItem->World, triangularPrismBWorld);
+		wallTopItem->TexTransform = MathHelper::Identity4x4();
+		wallTopItem->ObjCBIndex = objCBIndex++;
+		wallTopItem->Mat = mMaterials["wallMat"].get();
+		wallTopItem->Geo = mGeometries["shapeGeo"].get();
+		wallTopItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
+		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
+		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mAllRitems.push_back(std::move(wallTopItem));
+	}
 
 
 	// Front
