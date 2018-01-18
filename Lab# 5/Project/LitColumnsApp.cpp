@@ -6,6 +6,7 @@
 #include "../../Common/MathHelper.h"
 #include "../../Common/UploadBuffer.h"
 #include "../../Common/GeometryGenerator.h"
+#include "../../Common/Camera.h"
 #include "FrameResource.h"
 
 using Microsoft::WRL::ComPtr;
@@ -51,6 +52,15 @@ struct RenderItem
     int BaseVertexLocation = 0;
 };
 
+enum class RenderLayer : int
+{
+	Opaque = 0,
+	Transparent,
+	AlphaTested,
+	AlphaTestedTreeSprites,
+	Count
+};
+
 class LitColumnsApp : public D3DApp
 {
 public:
@@ -60,7 +70,7 @@ public:
     ~LitColumnsApp();
 
     virtual bool Initialize()override;
-
+	Camera mCamera;
 private:
     virtual void OnResize()override;
     virtual void Update(const GameTimer& gt)override;
@@ -107,8 +117,10 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
 	std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
+	std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> mTreeSpritesLayout;
 
     ComPtr<ID3D12PipelineState> mOpaquePSO = nullptr;
  
@@ -117,7 +129,7 @@ private:
 
 	// Render items divided by PSO.
 	std::vector<RenderItem*> mOpaqueRitems;
-
+	std::vector<RenderItem*> mRItemLayer[(int)RenderLayer::Count];
     PassConstants mMainPassCB;
 
 	XMFLOAT3 mEyePos = { 0.0f, 0.0f, 0.0f };
@@ -204,8 +216,9 @@ void LitColumnsApp::OnResize()
     D3DApp::OnResize();
 
     // The window resized, so update the aspect ratio and recompute the projection matrix.
-    XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
-    XMStoreFloat4x4(&mProj, P);
+   // XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
+    //XMStoreFloat4x4(&mProj, P);
+	mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 }
 
 void LitColumnsApp::Update(const GameTimer& gt)
@@ -340,6 +353,36 @@ void LitColumnsApp::OnMouseMove(WPARAM btnState, int x, int y)
  
 void LitColumnsApp::OnKeyboardInput(const GameTimer& gt)
 {
+	float angle = 0;
+
+	const float dt = gt.DeltaTime();
+
+	if (GetAsyncKeyState('W') & 0x8000)
+		mCamera.Walk(10.0f*dt);
+
+	if (GetAsyncKeyState('S') & 0x8000)
+		mCamera.Walk(-10.0f*dt);
+
+	if (GetAsyncKeyState('A') & 0x8000)
+		mCamera.Strafe(-10.0f*dt);
+
+	if (GetAsyncKeyState('D') & 0x8000)
+		mCamera.Strafe(10.0f*dt);
+
+	if (GetAsyncKeyState('Q') & 0x8000 && angle < XM_PI / 4)
+	{
+		mCamera.RotateZ(10.0f * dt);
+		angle += 10.0f * dt;
+	}
+
+	if (GetAsyncKeyState('E') & 0x8000 && angle > -XM_PI / 4)
+	{
+		mCamera.RotateZ(-10.0f * dt);
+		angle -= 10.0f * dt;
+	}
+
+	mCamera.UpdateViewMatrix();
+
 }
  
 void LitColumnsApp::UpdateCamera(const GameTimer& gt)
@@ -355,7 +398,7 @@ void LitColumnsApp::UpdateCamera(const GameTimer& gt)
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&mView, view);
+	XMStoreFloat4x4(&mView, mCamera.GetView());
 }
 
 void LitColumnsApp::AnimateMaterials(const GameTimer& gt)
@@ -415,8 +458,8 @@ void LitColumnsApp::UpdateMaterialCBs(const GameTimer& gt)
 
 void LitColumnsApp::UpdateMainPassCB(const GameTimer& gt)
 {
-	XMMATRIX view = XMLoadFloat4x4(&mView);
-	XMMATRIX proj = XMLoadFloat4x4(&mProj);
+	XMMATRIX view = mCamera.GetView();
+	XMMATRIX proj = mCamera.GetProj();
 
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -429,7 +472,7 @@ void LitColumnsApp::UpdateMainPassCB(const GameTimer& gt)
 	XMStoreFloat4x4(&mMainPassCB.InvProj, XMMatrixTranspose(invProj));
 	XMStoreFloat4x4(&mMainPassCB.ViewProj, XMMatrixTranspose(viewProj));
 	XMStoreFloat4x4(&mMainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
-	mMainPassCB.EyePosW = mEyePos;
+	mMainPassCB.EyePosW = mCamera.GetPosition3f();
 	mMainPassCB.RenderTargetSize = XMFLOAT2((float)mClientWidth, (float)mClientHeight);
 	mMainPassCB.InvRenderTargetSize = XMFLOAT2(1.0f / mClientWidth, 1.0f / mClientHeight);
 	mMainPassCB.NearZ = 1.0f;
@@ -581,7 +624,7 @@ void LitColumnsApp::BuildDescriptorHeaps()
 	srvDesc.Format = woodCrateTex->GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = woodCrateTex->GetDesc().MipLevels;
+	srvDesc.Texture2D.MipLevels = -1;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 	md3dDevice->CreateShaderResourceView(woodCrateTex.Get(), &srvDesc, hDescriptor);
@@ -589,7 +632,6 @@ void LitColumnsApp::BuildDescriptorHeaps()
 	auto brickTex = mTextures["bricks0Tex"]->Resource;
 	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	srvDesc.Format = brickTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = brickTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(brickTex.Get(), &srvDesc, hDescriptor);
 
 	auto stoneTex = mTextures["stone0Tex"]->Resource;
@@ -621,6 +663,8 @@ void LitColumnsApp::BuildDescriptorHeaps()
 	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	srvDesc.Format = wallTex->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(wallTex.Get(), &srvDesc, hDescriptor);
+
+
 }
 
 
@@ -1007,8 +1051,8 @@ void LitColumnsApp::BuildMaterials()
 	bricks0->Name = "bricks0";
 	bricks0->MatCBIndex = 0;
 	bricks0->DiffuseSrvHeapIndex = 0;
-	bricks0->DiffuseAlbedo = XMFLOAT4(Colors::ForestGreen);
-	bricks0->FresnelR0 = XMFLOAT3(0.02f, 0.02f, 0.02f);
+	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	bricks0->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	bricks0->Roughness = 0.1f;
 
 	auto stone0 = std::make_unique<Material>();
@@ -1092,6 +1136,7 @@ void LitColumnsApp::BuildRenderItems()
     gridRitem->IndexCount = gridRitem->Geo->DrawArgs["grid"].IndexCount;
     gridRitem->StartIndexLocation = gridRitem->Geo->DrawArgs["grid"].StartIndexLocation;
     gridRitem->BaseVertexLocation = gridRitem->Geo->DrawArgs["grid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::AlphaTested].push_back(gridRitem.get());
 	mAllRitems.push_back(std::move(gridRitem));
 
 
@@ -1102,12 +1147,13 @@ void LitColumnsApp::BuildRenderItems()
 	XMStoreFloat4x4(&cylinderBRItem->World, cylinderBRWorld);
 	cylinderBRItem->TexTransform = MathHelper::Identity4x4();
 	cylinderBRItem->ObjCBIndex = objCBIndex++;
-	cylinderBRItem->Mat = mMaterials["wallMat"].get();
+	cylinderBRItem->Mat = mMaterials["stone0"].get();
 	cylinderBRItem->Geo = mGeometries["shapeGeo"].get();
 	cylinderBRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	cylinderBRItem->IndexCount = cylinderBRItem->Geo->DrawArgs["cylinder"].IndexCount;
 	cylinderBRItem->StartIndexLocation = cylinderBRItem->Geo->DrawArgs["cylinder"].StartIndexLocation;
 	cylinderBRItem->BaseVertexLocation = cylinderBRItem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::AlphaTested].push_back(cylinderBRItem.get());
 	mAllRitems.push_back(std::move(cylinderBRItem));
 
 	//Back Left cylinder
@@ -1122,6 +1168,7 @@ void LitColumnsApp::BuildRenderItems()
 	cylinderBLItem->IndexCount = cylinderBLItem->Geo->DrawArgs["cylinder"].IndexCount;
 	cylinderBLItem->StartIndexLocation = cylinderBLItem->Geo->DrawArgs["cylinder"].StartIndexLocation;
 	cylinderBLItem->BaseVertexLocation = cylinderBLItem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cylinderBLItem.get());
 	mAllRitems.push_back(std::move(cylinderBLItem));
 
 	//Front Right cylinder
@@ -1130,12 +1177,13 @@ void LitColumnsApp::BuildRenderItems()
 	XMStoreFloat4x4(&cylinderFRItem->World, cylinderFRWorld);
 	cylinderFRItem->TexTransform = MathHelper::Identity4x4();
 	cylinderFRItem->ObjCBIndex = objCBIndex++;
-	cylinderFRItem->Mat = mMaterials["wallMat"].get();
+	cylinderFRItem->Mat = mMaterials["bricks0"].get();
 	cylinderFRItem->Geo = mGeometries["shapeGeo"].get();
 	cylinderFRItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	cylinderFRItem->IndexCount = cylinderFRItem->Geo->DrawArgs["cylinder"].IndexCount;
 	cylinderFRItem->StartIndexLocation = cylinderFRItem->Geo->DrawArgs["cylinder"].StartIndexLocation;
 	cylinderFRItem->BaseVertexLocation = cylinderFRItem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cylinderFRItem.get());
 	mAllRitems.push_back(std::move(cylinderFRItem));
 
 	//Front Left cylinder
@@ -1150,6 +1198,7 @@ void LitColumnsApp::BuildRenderItems()
 	cylinderFLItem->IndexCount = cylinderFLItem->Geo->DrawArgs["cylinder"].IndexCount;
 	cylinderFLItem->StartIndexLocation = cylinderFLItem->Geo->DrawArgs["cylinder"].StartIndexLocation;
 	cylinderFLItem->BaseVertexLocation = cylinderFLItem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cylinderFLItem.get());
 	mAllRitems.push_back(std::move(cylinderFLItem));
 
 	//Back Right Cone
@@ -1164,6 +1213,7 @@ void LitColumnsApp::BuildRenderItems()
 	coneBRItem->IndexCount = coneBRItem->Geo->DrawArgs["cone"].IndexCount;
 	coneBRItem->StartIndexLocation = coneBRItem->Geo->DrawArgs["cone"].StartIndexLocation;
 	coneBRItem->BaseVertexLocation = coneBRItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(coneBRItem.get());
 	mAllRitems.push_back(std::move(coneBRItem));
 	
 	//Back Left Cone
@@ -1178,6 +1228,7 @@ void LitColumnsApp::BuildRenderItems()
 	coneBLItem->IndexCount = coneBLItem->Geo->DrawArgs["cone"].IndexCount;
 	coneBLItem->StartIndexLocation = coneBLItem->Geo->DrawArgs["cone"].StartIndexLocation;
 	coneBLItem->BaseVertexLocation = coneBLItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(coneBLItem.get());
 	mAllRitems.push_back(std::move(coneBLItem));
 	
 	//Front Right Cone
@@ -1192,6 +1243,7 @@ void LitColumnsApp::BuildRenderItems()
 	coneFRItem->IndexCount = coneFRItem->Geo->DrawArgs["cone"].IndexCount;
 	coneFRItem->StartIndexLocation = coneFRItem->Geo->DrawArgs["cone"].StartIndexLocation;
 	coneFRItem->BaseVertexLocation = coneFRItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(coneFRItem.get());
 	mAllRitems.push_back(std::move(coneFRItem));
 
 	//Front Left Cone
@@ -1206,6 +1258,7 @@ void LitColumnsApp::BuildRenderItems()
 	coneFLItem->IndexCount = coneFLItem->Geo->DrawArgs["cone"].IndexCount;
 	coneFLItem->StartIndexLocation = coneFLItem->Geo->DrawArgs["cone"].StartIndexLocation;
 	coneFLItem->BaseVertexLocation = coneFLItem->Geo->DrawArgs["cone"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(coneFLItem.get());
 	mAllRitems.push_back(std::move(coneFLItem));
 
 
@@ -1216,12 +1269,13 @@ void LitColumnsApp::BuildRenderItems()
 	XMStoreFloat4x4(&wallLeftItem->World, wallLeftWorld);
 	wallLeftItem->TexTransform = MathHelper::Identity4x4();
 	wallLeftItem->ObjCBIndex = objCBIndex++;
-	wallLeftItem->Mat = mMaterials["wallMat"].get();
+	wallLeftItem->Mat = mMaterials["stone0"].get();
 	wallLeftItem->Geo = mGeometries["shapeGeo"].get();
 	wallLeftItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	wallLeftItem->IndexCount = wallLeftItem->Geo->DrawArgs["box"].IndexCount;
 	wallLeftItem->StartIndexLocation = wallLeftItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallLeftItem->BaseVertexLocation = wallLeftItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallLeftItem.get());
 	mAllRitems.push_back(std::move(wallLeftItem));
 
 	// Wall Right
@@ -1230,12 +1284,13 @@ void LitColumnsApp::BuildRenderItems()
 	XMStoreFloat4x4(&wallRightItem->World, wallRightWorld);
 	wallRightItem->TexTransform = MathHelper::Identity4x4();
 	wallRightItem->ObjCBIndex = objCBIndex++;
-	wallRightItem->Mat = mMaterials["wallMat"].get();
+	wallRightItem->Mat = mMaterials["stone0"].get();
 	wallRightItem->Geo = mGeometries["shapeGeo"].get();
 	wallRightItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	wallRightItem->IndexCount = wallRightItem->Geo->DrawArgs["box"].IndexCount;
 	wallRightItem->StartIndexLocation = wallRightItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallRightItem->BaseVertexLocation = wallRightItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallRightItem.get());
 	mAllRitems.push_back(std::move(wallRightItem));
 
 	// Wall Back
@@ -1244,12 +1299,13 @@ void LitColumnsApp::BuildRenderItems()
 	XMStoreFloat4x4(&wallBackItem->World, wallBackWorld);
 	wallBackItem->TexTransform = MathHelper::Identity4x4();
 	wallBackItem->ObjCBIndex = objCBIndex++;
-	wallBackItem->Mat = mMaterials["wallMat"].get();
+	wallBackItem->Mat = mMaterials["stone0"].get();
 	wallBackItem->Geo = mGeometries["shapeGeo"].get();
 	wallBackItem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	wallBackItem->IndexCount = wallBackItem->Geo->DrawArgs["box"].IndexCount;
 	wallBackItem->StartIndexLocation = wallBackItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallBackItem->BaseVertexLocation = wallBackItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallBackItem.get());
 	mAllRitems.push_back(std::move(wallBackItem));
 
 	// Wall Front Left
@@ -1264,6 +1320,7 @@ void LitColumnsApp::BuildRenderItems()
 	wallFLItem->IndexCount = wallFLItem->Geo->DrawArgs["box"].IndexCount;
 	wallFLItem->StartIndexLocation = wallFLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallFLItem->BaseVertexLocation = wallFLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallFLItem.get());
 	mAllRitems.push_back(std::move(wallFLItem));
 
 	// Wall Front Right
@@ -1278,6 +1335,7 @@ void LitColumnsApp::BuildRenderItems()
 	wallFRItem->IndexCount = wallFRItem->Geo->DrawArgs["box"].IndexCount;
 	wallFRItem->StartIndexLocation = wallFRItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallFRItem->BaseVertexLocation = wallFRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallFRItem.get());
 	mAllRitems.push_back(std::move(wallFRItem));
 
 	// Wall Front Top
@@ -1292,6 +1350,7 @@ void LitColumnsApp::BuildRenderItems()
 	wallFTItem->IndexCount = wallFTItem->Geo->DrawArgs["box"].IndexCount;
 	wallFTItem->StartIndexLocation = wallFTItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallFTItem->BaseVertexLocation = wallFTItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallFTItem.get());
 	mAllRitems.push_back(std::move(wallFTItem));
 
 	// Wall Front Bottom
@@ -1306,6 +1365,7 @@ void LitColumnsApp::BuildRenderItems()
 	wallFBItem->IndexCount = wallFBItem->Geo->DrawArgs["box"].IndexCount;
 	wallFBItem->StartIndexLocation = wallFBItem->Geo->DrawArgs["box"].StartIndexLocation;
 	wallFBItem->BaseVertexLocation = wallFBItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(wallFBItem.get());
 	mAllRitems.push_back(std::move(wallFBItem));
 
 
@@ -1333,6 +1393,7 @@ void LitColumnsApp::BuildRenderItems()
 		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mRItemLayer[(int)RenderLayer::Opaque].push_back(wallTopItem.get());
 		mAllRitems.push_back(std::move(wallTopItem));
 	}
 
@@ -1354,6 +1415,7 @@ void LitColumnsApp::BuildRenderItems()
 		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mRItemLayer[(int)RenderLayer::Opaque].push_back(wallTopItem.get());
 		mAllRitems.push_back(std::move(wallTopItem));
 	}
 
@@ -1375,6 +1437,7 @@ void LitColumnsApp::BuildRenderItems()
 		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mRItemLayer[(int)RenderLayer::Opaque].push_back(wallTopItem.get());
 		mAllRitems.push_back(std::move(wallTopItem));
 	}
 
@@ -1396,6 +1459,7 @@ void LitColumnsApp::BuildRenderItems()
 		wallTopItem->IndexCount = wallTopItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 		wallTopItem->StartIndexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 		wallTopItem->BaseVertexLocation = wallTopItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+		mRItemLayer[(int)RenderLayer::Opaque].push_back(wallTopItem.get());
 		mAllRitems.push_back(std::move(wallTopItem));
 	}
 
@@ -1413,6 +1477,7 @@ void LitColumnsApp::BuildRenderItems()
 	rampItem->IndexCount = rampItem->Geo->DrawArgs["wedge"].IndexCount;
 	rampItem->StartIndexLocation = rampItem->Geo->DrawArgs["wedge"].StartIndexLocation;
 	rampItem->BaseVertexLocation = rampItem->Geo->DrawArgs["wedge"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(rampItem.get());
 	mAllRitems.push_back(std::move(rampItem));
 
 	auto rampInItem = std::make_unique<RenderItem>();
@@ -1426,6 +1491,7 @@ void LitColumnsApp::BuildRenderItems()
 	rampInItem->IndexCount = rampInItem->Geo->DrawArgs["wedge"].IndexCount;
 	rampInItem->StartIndexLocation = rampInItem->Geo->DrawArgs["wedge"].StartIndexLocation;
 	rampInItem->BaseVertexLocation = rampInItem->Geo->DrawArgs["wedge"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(rampInItem.get());
 	mAllRitems.push_back(std::move(rampInItem));
 	
 
@@ -1441,6 +1507,7 @@ void LitColumnsApp::BuildRenderItems()
 	castleWallBItem->IndexCount = castleWallBItem->Geo->DrawArgs["box"].IndexCount;
 	castleWallBItem->StartIndexLocation = castleWallBItem->Geo->DrawArgs["box"].StartIndexLocation;
 	castleWallBItem->BaseVertexLocation = castleWallBItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(castleWallBItem.get());
 	mAllRitems.push_back(std::move(castleWallBItem));
 
 
@@ -1456,6 +1523,7 @@ void LitColumnsApp::BuildRenderItems()
 	castleWallRItem->IndexCount = castleWallRItem->Geo->DrawArgs["box"].IndexCount;
 	castleWallRItem->StartIndexLocation = castleWallRItem->Geo->DrawArgs["box"].StartIndexLocation;
 	castleWallRItem->BaseVertexLocation = castleWallRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(castleWallRItem.get());
 	mAllRitems.push_back(std::move(castleWallRItem));
 
 	// Castle Wall Left
@@ -1470,6 +1538,7 @@ void LitColumnsApp::BuildRenderItems()
 	castleWallLItem->IndexCount = castleWallLItem->Geo->DrawArgs["box"].IndexCount;
 	castleWallLItem->StartIndexLocation = castleWallLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	castleWallLItem->BaseVertexLocation = castleWallLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(castleWallLItem.get());
 	mAllRitems.push_back(std::move(castleWallLItem));
 
 
@@ -1485,6 +1554,7 @@ void LitColumnsApp::BuildRenderItems()
 	castleWallFLItem->IndexCount = castleWallFLItem->Geo->DrawArgs["box"].IndexCount;
 	castleWallFLItem->StartIndexLocation = castleWallFLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	castleWallFLItem->BaseVertexLocation = castleWallFLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(castleWallFLItem.get());
 	mAllRitems.push_back(std::move(castleWallFLItem));
 
 
@@ -1500,6 +1570,7 @@ void LitColumnsApp::BuildRenderItems()
 	castleWallFRItem->IndexCount = castleWallFRItem->Geo->DrawArgs["box"].IndexCount;
 	castleWallFRItem->StartIndexLocation = castleWallFRItem->Geo->DrawArgs["box"].StartIndexLocation;
 	castleWallFRItem->BaseVertexLocation = castleWallFRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(castleWallFRItem.get());
 	mAllRitems.push_back(std::move(castleWallFRItem));
 
 
@@ -1515,6 +1586,7 @@ void LitColumnsApp::BuildRenderItems()
 	pyramidRoofItem->IndexCount = pyramidRoofItem->Geo->DrawArgs["pyramid"].IndexCount;
 	pyramidRoofItem->StartIndexLocation = pyramidRoofItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
 	pyramidRoofItem->BaseVertexLocation = pyramidRoofItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(pyramidRoofItem.get());
 	mAllRitems.push_back(std::move(pyramidRoofItem));
 
 	// Left tower Cube
@@ -1529,6 +1601,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeTowerLItem->IndexCount = cubeTowerLItem->Geo->DrawArgs["box"].IndexCount;
 	cubeTowerLItem->StartIndexLocation = cubeTowerLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeTowerLItem->BaseVertexLocation = cubeTowerLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeTowerLItem.get());
 	mAllRitems.push_back(std::move(cubeTowerLItem));
 
 	// Left tower Top
@@ -1543,6 +1616,7 @@ void LitColumnsApp::BuildRenderItems()
 	truncTopLItem->IndexCount = truncTopLItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 	truncTopLItem->StartIndexLocation = truncTopLItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 	truncTopLItem->BaseVertexLocation = truncTopLItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(truncTopLItem.get());
 	mAllRitems.push_back(std::move(truncTopLItem));
 
 
@@ -1558,6 +1632,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeTowerRItem->IndexCount = cubeTowerRItem->Geo->DrawArgs["box"].IndexCount;
 	cubeTowerRItem->StartIndexLocation = cubeTowerRItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeTowerRItem->BaseVertexLocation = cubeTowerRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeTowerRItem.get());
 	mAllRitems.push_back(std::move(cubeTowerRItem));
 
 	// Right tower Top
@@ -1572,6 +1647,7 @@ void LitColumnsApp::BuildRenderItems()
 	truncTopRItem->IndexCount = truncTopRItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 	truncTopRItem->StartIndexLocation = truncTopRItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 	truncTopRItem->BaseVertexLocation = truncTopRItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(truncTopRItem.get());
 	mAllRitems.push_back(std::move(truncTopRItem));
 
 
@@ -1588,6 +1664,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseRItem->IndexCount = cubeHouseRItem->Geo->DrawArgs["box"].IndexCount;
 	cubeHouseRItem->StartIndexLocation = cubeHouseRItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeHouseRItem->BaseVertexLocation = cubeHouseRItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseRItem.get());
 	mAllRitems.push_back(std::move(cubeHouseRItem));
 
 
@@ -1603,6 +1680,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseRTopItem->IndexCount = cubeHouseRTopItem->Geo->DrawArgs["pyramid"].IndexCount;
 	cubeHouseRTopItem->StartIndexLocation = cubeHouseRTopItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
 	cubeHouseRTopItem->BaseVertexLocation = cubeHouseRTopItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseRTopItem.get());
 	mAllRitems.push_back(std::move(cubeHouseRTopItem));
 
 
@@ -1618,6 +1696,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseSFItem->IndexCount = cubeHouseSFItem->Geo->DrawArgs["box"].IndexCount;
 	cubeHouseSFItem->StartIndexLocation = cubeHouseSFItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeHouseSFItem->BaseVertexLocation = cubeHouseSFItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseSFItem.get());
 	mAllRitems.push_back(std::move(cubeHouseSFItem));
 
 
@@ -1633,6 +1712,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseSFTItem->IndexCount = cubeHouseSFTItem->Geo->DrawArgs["pyramid"].IndexCount;
 	cubeHouseSFTItem->StartIndexLocation = cubeHouseSFTItem->Geo->DrawArgs["pyramid"].StartIndexLocation;
 	cubeHouseSFTItem->BaseVertexLocation = cubeHouseSFTItem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseSFTItem.get());
 	mAllRitems.push_back(std::move(cubeHouseSFTItem));
 
 	
@@ -1648,6 +1728,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseSBItem->IndexCount = cubeHouseSBItem->Geo->DrawArgs["box"].IndexCount;
 	cubeHouseSBItem->StartIndexLocation = cubeHouseSBItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeHouseSBItem->BaseVertexLocation = cubeHouseSBItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseSBItem.get());
 	mAllRitems.push_back(std::move(cubeHouseSBItem));
 
 	
@@ -1663,6 +1744,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseSBTItem->IndexCount = cubeHouseSBTItem->Geo->DrawArgs["truncPyramid"].IndexCount;
 	cubeHouseSBTItem->StartIndexLocation = cubeHouseSBTItem->Geo->DrawArgs["truncPyramid"].StartIndexLocation;
 	cubeHouseSBTItem->BaseVertexLocation = cubeHouseSBTItem->Geo->DrawArgs["truncPyramid"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseSBTItem.get());
 	mAllRitems.push_back(std::move(cubeHouseSBTItem));
 
 
@@ -1678,6 +1760,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseLItem->IndexCount = cubeHouseLItem->Geo->DrawArgs["box"].IndexCount;
 	cubeHouseLItem->StartIndexLocation = cubeHouseLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeHouseLItem->BaseVertexLocation = cubeHouseLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseLItem.get());
 	mAllRitems.push_back(std::move(cubeHouseLItem));
 
 
@@ -1693,6 +1776,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseLLItem->IndexCount = cubeHouseLLItem->Geo->DrawArgs["box"].IndexCount;
 	cubeHouseLLItem->StartIndexLocation = cubeHouseLLItem->Geo->DrawArgs["box"].StartIndexLocation;
 	cubeHouseLLItem->BaseVertexLocation = cubeHouseLLItem->Geo->DrawArgs["box"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseLLItem.get());
 	mAllRitems.push_back(std::move(cubeHouseLLItem));
 
 
@@ -1708,6 +1792,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseLTItem->IndexCount = cubeHouseLTItem->Geo->DrawArgs["triangularPrism"].IndexCount;
 	cubeHouseLTItem->StartIndexLocation = cubeHouseLTItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
 	cubeHouseLTItem->BaseVertexLocation = cubeHouseLTItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseLTItem.get());
 	mAllRitems.push_back(std::move(cubeHouseLTItem));
 
 
@@ -1723,6 +1808,7 @@ void LitColumnsApp::BuildRenderItems()
 	cubeHouseLLTItem->IndexCount = cubeHouseLLTItem->Geo->DrawArgs["triangularPrism"].IndexCount;
 	cubeHouseLLTItem->StartIndexLocation = cubeHouseLLTItem->Geo->DrawArgs["triangularPrism"].StartIndexLocation;
 	cubeHouseLLTItem->BaseVertexLocation = cubeHouseLLTItem->Geo->DrawArgs["triangularPrism"].BaseVertexLocation;
+	mRItemLayer[(int)RenderLayer::Opaque].push_back(cubeHouseLLTItem.get());
 	mAllRitems.push_back(std::move(cubeHouseLLTItem));
 
 
@@ -1843,7 +1929,7 @@ void LitColumnsApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const st
 
 		cmdList->SetGraphicsRootDescriptorTable(0, tex);
         cmdList->SetGraphicsRootConstantBufferView(1, objCBAddress);
-		cmdList->SetGraphicsRootConstantBufferView(2, matCBAddress);
+		cmdList->SetGraphicsRootConstantBufferView(3, matCBAddress);
 
         cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
     }
